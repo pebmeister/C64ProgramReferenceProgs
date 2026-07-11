@@ -162,7 +162,7 @@ int main()
 
 	}
 	
-   // disk.save("C64ProgramRef.D64");
+   disk.save("C64ProgramRef.D64");
     
     return 0;
 }
