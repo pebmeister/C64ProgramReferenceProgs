@@ -52,7 +52,7 @@ std::vector<struct Prog> progs {
 		20,
 		20,
 		1,
-		R"(5 PRINT "[147]"
+		R"(5 PRINT "{CLRHOME}"
 10 PRINT "MONTHLY INCOME":INPUT IN
 20 PRINT
 30 PRINT "EXPENSE CATEGORY 1": INPUT E1$
@@ -63,7 +63,7 @@ std::vector<struct Prog> progs {
 80 PRINT
 90 PRINT "EXPENSE CATEGORY 3": INPUT E3$
 100 PRINT "EXPENSE AMOUNT": INPUT E3
-110 PRINT "[147]"
+110 PRINT "{CLRHOME}"
 120 E=E1+E2+E3
 130 EP=E/IN
 140 PRINT "MONTHLY INCOME $"IN
@@ -77,7 +77,7 @@ std::vector<struct Prog> progs {
 220 PRINT "YOUR EXPENSES="EP*100"% OF YOUR TOTAL INCOME"
 230 FOR X=1TO5000:NEXT:PRINT
 240 PRINT "REPEAT (Y OR N) " : INPUT Y$: IF Y$="Y" THEN 5
-250 PRINT "[147]": END)",
+250 PRINT "{CLRHOME}": END)",
 		{"income","expense","budget"}
 	},
 	{
@@ -128,7 +128,7 @@ std::vector<struct Prog> progs {
 	    38,
 	    1,
 	    R"(10 PRINT ATN (0)
-20 X=ATN (J) * 180 / π: REM CONVERT TO DEGREES)"
+20 X=ATN (J) * 180 / {PI}: REM CONVERT TO DEGREES)"
 	}
 
 };
