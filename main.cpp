@@ -108,7 +108,7 @@ static struct LineOutput TokenizeLine(const int current_address, const std::stri
 		                    byte = ascii_to_petscii[str[pos]];
 					        output.bytes.push_back(byte);
 					    }
-					    pos += result.length;
+					    pos += (result.length -1); // pos incremented at the top
 					    continue;
 					}
 					else {
@@ -172,29 +172,7 @@ int main()
 
 		auto i = 0;
 		while (i < pr.length())  {
-			if (i>0 && pr[i-1] == '\"' && pr[i] == '[') {
-				i++;
-				auto ch = 0;
-
-				while (i+1 < pr.length()) {
-					if (pr[i] == ']' && pr[i+1]=='\"') {
-						ss << static_cast<char>(ch);
-						break;
-					}
-					if (std::isdigit(pr[i])) {
-						ch *=10;
-						ch += pr[i]-'0';
-					}
-					else {
-						ss << "[" << pr[i];
-						break;
-					}
-					i++;
-				}
-			}
-			else {
-				ss << pr[i];
-			}
+			ss << pr[i];
 			i++;
 		}
 		ss << "\n";
