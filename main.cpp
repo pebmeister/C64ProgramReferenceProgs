@@ -1,3 +1,12 @@
+
+/******************************************************************************
+
+Welcome to GDB Online.
+  GDB online is an online compiler and debugger tool for C, C++, Python, PHP, Ruby,
+  C#, OCaml, VB, Perl, Swift, Prolog, Javascript, Pascal, COBOL, HTML, CSS, JS
+  Code, Compile, Run and Debug online from anywhere in world.
+
+*******************************************************************************/
 #include <stdio.h>
 #include <string>
 #include <vector>
@@ -89,8 +98,23 @@ static struct LineOutput TokenizeLine(const int current_address, const std::stri
 				do
 				{
 					pos++;
-		            byte = ascii_to_petscii[str[pos]];
-					output.bytes.push_back(byte);
+					if (str[pos] == '{') { // allow {} tokens in strings
+					    result = match_longest_token(root, str, pos);
+					    std::string_view tok{str.data() + pos, result.length};
+					    if (result.token_id != 0) {
+					        output.bytes.push_back(result.token_id);
+					    }
+					    else {
+		                    byte = ascii_to_petscii[str[pos]];
+					        output.bytes.push_back(byte);
+					    }
+					    pos += result.length;
+					    continue;
+					}
+					else {
+		                byte = ascii_to_petscii[str[pos]];
+					    output.bytes.push_back(byte);
+					}
 				} while (pos < str.length() && str[pos] != quote[0]);
 			}
 		}
@@ -190,7 +214,7 @@ int main()
 
 	}
 	
-   disk.save("C64ProgramRef.D64");
+ //   disk.save("C64ProgramRef.D64");
     
     return 0;
 }
