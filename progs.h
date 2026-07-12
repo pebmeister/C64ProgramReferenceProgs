@@ -94,15 +94,64 @@ std::vector<struct Prog> progs {
 		{"screen", "edit"}
 	},
 	{
-			2,
-			37,
-			37,
-			1,
-			R"(10 PRINT ASC("Z" )
+		2,
+		35,
+		35,
+		1,
+		R"(10 X = ABS (Y)
+10 PRINT ABS (X * J)
+10 IF X = ABS (X) THEN PRINT "POSITIVE")",
+		{ "basic", "functions", "abs" }
+	},
+	{
+		2,
+		37,
+		37,
+		1,
+		R"(50 IF X=7 AND W=3 THEN GOTO 10: REM ONLY TRUE IF BOTH X=7 AND W=3 ARE TRUE
+60 IF A AND Q=7 THEN GOTO 10: REM TRUE IF A IS NON- ZERO AND Q=7 IS TRUE)",
+		{ "basic", "functions", "and" }
+	},
+	{
+		2,
+		37,
+		37,
+		2,
+		R"(10 PRINT ASC("Z")
 20 X= ASC("ZEBRA")
-30 J=ASC(J$))",
-   {"basic", "functions", "asc"}
-		}
+30 J = ASC(J$ +CHR$(0))",
+		{"basic", "functions", "asc"}
+	},
+	{
+	    2,
+	    38,
+	    38,
+	    1,
+	    R"(10 PRINT ATN (0)
+20 X=ATN (J) * 180 / π: REM CONVERT TO DEGREES)"
+	}
 
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
