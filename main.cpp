@@ -1,12 +1,3 @@
-
-/******************************************************************************
-
-Welcome to GDB Online.
-  GDB online is an online compiler and debugger tool for C, C++, Python, PHP, Ruby,
-  C#, OCaml, VB, Perl, Swift, Prolog, Javascript, Pascal, COBOL, HTML, CSS, JS
-  Code, Compile, Run and Debug online from anywhere in world.
-
-*******************************************************************************/
 #include <stdio.h>
 #include <string>
 #include <vector>
@@ -83,7 +74,8 @@ static struct LineOutput TokenizeLine(const int current_address, const std::stri
 			if (result.token_id == 143) { // rem statement dont tokenize rest of line
 				pos += result.length;
 				while (pos < str.length() && str[pos] != '\n') {
-					output.bytes.push_back(str[pos]);
+			        auto byte = ascii_to_petscii[str[pos]];
+					output.bytes.push_back(byte);
 					pos++;
 				}
 				// output.bytes.push_back(0);
@@ -91,12 +83,14 @@ static struct LineOutput TokenizeLine(const int current_address, const std::stri
 			}
 		}
 		else {
-			output.bytes.push_back(tok[0]);
+		    auto byte = ascii_to_petscii[tok[0]];
+			output.bytes.push_back(byte);
 			if (tok == quote) {
 				do
 				{
 					pos++;
-					output.bytes.push_back(str[pos]);
+		            byte = ascii_to_petscii[str[pos]];
+					output.bytes.push_back(byte);
 				} while (pos < str.length() && str[pos] != quote[0]);
 			}
 		}
