@@ -101,7 +101,7 @@ std::vector<struct Prog> progs {
 			R"(10 PRINT ASC("Z" )
 20 X= ASC("ZEBRA")
 30 J=ASC(J$))",
-   {"basic", "functions", "asc")
+   {"basic", "functions", "asc"}
 		}
 
 };
