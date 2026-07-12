@@ -92,7 +92,17 @@ std::vector<struct Prog> progs {
 50 IF A$=CHR$(136) THEN A$="SINCERLY,"+CHR$(13)
 100 PRINT A$;: GOTO10)",
 		{"screen", "edit"}
-	}
+	},
+	{
+			2,
+			37,
+			37,
+			1,
+			R"(10 PRINT ASC("Z" )
+20 X= ASC("ZEBRA")
+30 J=ASC(J$))",
+   {"basic", "functions", "asc")
+		}
 
 };
 
