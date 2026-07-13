@@ -151,7 +151,7 @@ int main()
 {
     d64 disk;
     disk.rename_disk("c64progref");
-
+    auto progno = 1;
 	for (auto& prog: progs) {
 
 		auto pr=prog.prog;
@@ -167,9 +167,11 @@ int main()
 		auto str = ss.str();
 		auto out = TokenizeString(str);
 
-		std::string output_path = "CH" + std::to_string(prog.chapter) + "-" +
-		                          "PG" + std::to_string(prog.page) + "-" +
-		                          "PROGRAM" + std::to_string(prog.prog_number);
+		std::string output_path = std::to_string(progno++) + "[" +
+		                           std::to_string(prog.chapter) + "]["+
+		                           std::to_string(prog.page) + "][" +
+		                          std::to_string(prog.prog_number) + "]";
+		                          
 
         auto result = disk.addFile(output_path, c64FileType(d64FileTypes::PRG), out);
         if (result) {
