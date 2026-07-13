@@ -76,7 +76,31 @@ static MatchResult match_longest_token(std::shared_ptr<ParseNode> root, const st
 
 static const std::unordered_map<std::string, int> KeywordToToken
 {
+    {"{LBLU}", 154},
+    {"{LGRN}", 153},
+    {"{GRY2}", 152},
+    {"{GRY1}", 151},
+    {"{BRN}", 149},
+    {"{ORNG}", 129},
+    {"{GRN}", 30},
+    {"{CYN}", 159},
+    {"{RED}", 28},
+    {"{F8}", 140},
+    {"{F6}", 139},
+    {"{F5}", 135},
+    {"{F3}", 134},
+    {"{RUN/STOP}", 3},
+    {"{DISABLE LOCK}", 8},
+    {"{CASE UP}", 142},
+    {"{YEL}", 158},
+    {"{CASE LOW}", 14},
+    {"{RVS ON}", 18},
+    {"{DEL}", 20},
+    {"{CURSR DOWN}", 17},
+    {"{CURSR UP}", 145},
+    {"{RETURN}", 13},
     {"RIGHT$", 201},
+    {"{CURSR LEFT}", 157},
     {"ASC", 198},
     {"LEN", 195},
     {"PEEK", 194},
@@ -93,16 +117,23 @@ static const std::unordered_map<std::string, int> KeywordToToken
     {"ON", 145},
     {"PRINT#", 152},
     {"STOP", 144},
+    {"{BLU}", 31},
     {"SAVE", 148},
+    {"{CURSR RIGHT}", 29},
     {"STEP", 169},
     {"REM", 143},
+    {"{RVS OFF}", 146},
     {"CLR", 156},
     {"POS", 185},
     {"PRINT", 153},
     {"RETURN", 142},
+    {"{ENABLE LOCK}", 9},
     {"*", 172},
+    {"{F1}", 133},
     {"GOSUB", 141},
+    {"{PUR}", 156},
     {"END", 128},
+    {"{HOME}", 19},
     {"FOR", 129},
     {"DEF", 150},
     {"RESTORE", 140},
@@ -110,26 +141,32 @@ static const std::unordered_map<std::string, int> KeywordToToken
     {"CHR$", 199},
     {"INPUT#", 132},
     {"THEN", 167},
+    {"{GRY3}", 155},
+    {"{F4}", 138},
     {"LOAD", 147},
     {"<", 179},
     {"NEXT", 130},
+    {"{F7}", 136},
     {"INPUT", 133},
     {"{PI}", 255},
     {"RUN", 138},
     {"OR", 176},
     {"FRE", 184},
+    {"{SHIFT RETURN}", 141},
     {"MID$", 202},
     {"USR", 183},
     {"LET", 136},
     {"DIM", 134},
-    {"{CLRHOME}", 147},
     {"STR$", 196},
     {"LOG", 188},
     {"IF", 139},
     {"CMD", 157},
     {"SYS", 158},
+    {"{BLK}", 144},
     {"+", 170},
+    {"{FLASH ON}", 2},
     {"INT", 181},
+    {"{INST}", 148},
     {"OPEN", 159},
     {"DATA", 131},
     {"LIST", 155},
@@ -138,19 +175,25 @@ static const std::unordered_map<std::string, int> KeywordToToken
     {"TO", 164},
     {"CLOSE", 160},
     {"GET", 161},
+    {"{F2}", 137},
     {"TAB(", 163},
     {"FN", 165},
+    {"{WHT}", 5},
     {"NOT", 168},
     {"-", 171},
+    {"{CLR}", 147},
     {"GOTO", 137},
     {"/", 173},
     {"READ", 135},
     {"ABS", 182},
+    {"GO", 203},
     {"AND", 175},
     {"VAL", 197},
     {">", 177},
+    {"{SHIFT RUN}", 131},
     {"LEFT$", 200},
     {"=", 178},
+    {"{LRED}", 150},
     {"SGN", 180},
     {"SQR", 186},
 };
@@ -407,7 +450,7 @@ std::make_shared<ParseNode>(
                   }
                 ),
                 std::make_shared<ParseNode>(
-                  'O', 0,
+                  'O', 203,
                   std::vector<std::shared_ptr<ParseNode>>{
                         std::make_shared<ParseNode>(
                           'S', 0,
@@ -1005,28 +1048,89 @@ std::make_shared<ParseNode>(
           '{', 0,
           std::vector<std::shared_ptr<ParseNode>>{
                 std::make_shared<ParseNode>(
-                  'C', 0,
+                  'B', 0,
                   std::vector<std::shared_ptr<ParseNode>>{
                         std::make_shared<ParseNode>(
                           'L', 0,
                           std::vector<std::shared_ptr<ParseNode>>{
                                 std::make_shared<ParseNode>(
-                                  'R', 0,
+                                  'K', 0,
                                   std::vector<std::shared_ptr<ParseNode>>{
                                         std::make_shared<ParseNode>(
-                                          'H', 0,
+                                          '}', 144,
+                                          std::vector<std::shared_ptr<ParseNode>>{}
+                                        )
+                                  }
+                                ),
+                                std::make_shared<ParseNode>(
+                                  'U', 0,
+                                  std::vector<std::shared_ptr<ParseNode>>{
+                                        std::make_shared<ParseNode>(
+                                          '}', 31,
+                                          std::vector<std::shared_ptr<ParseNode>>{}
+                                        )
+                                  }
+                                )
+                          }
+                        ),
+                        std::make_shared<ParseNode>(
+                          'R', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  'N', 0,
+                                  std::vector<std::shared_ptr<ParseNode>>{
+                                        std::make_shared<ParseNode>(
+                                          '}', 149,
+                                          std::vector<std::shared_ptr<ParseNode>>{}
+                                        )
+                                  }
+                                )
+                          }
+                        )
+                  }
+                ),
+                std::make_shared<ParseNode>(
+                  'C', 0,
+                  std::vector<std::shared_ptr<ParseNode>>{
+                        std::make_shared<ParseNode>(
+                          'A', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  'S', 0,
+                                  std::vector<std::shared_ptr<ParseNode>>{
+                                        std::make_shared<ParseNode>(
+                                          'E', 0,
                                           std::vector<std::shared_ptr<ParseNode>>{
                                                 std::make_shared<ParseNode>(
-                                                  'O', 0,
+                                                  ' ', 0,
                                                   std::vector<std::shared_ptr<ParseNode>>{
                                                         std::make_shared<ParseNode>(
-                                                          'M', 0,
+                                                          'L', 0,
                                                           std::vector<std::shared_ptr<ParseNode>>{
                                                                 std::make_shared<ParseNode>(
-                                                                  'E', 0,
+                                                                  'O', 0,
                                                                   std::vector<std::shared_ptr<ParseNode>>{
                                                                         std::make_shared<ParseNode>(
-                                                                          '}', 147,
+                                                                          'W', 0,
+                                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                                std::make_shared<ParseNode>(
+                                                                                  '}', 14,
+                                                                                  std::vector<std::shared_ptr<ParseNode>>{}
+                                                                                )
+                                                                          }
+                                                                        )
+                                                                  }
+                                                                )
+                                                          }
+                                                        ),
+                                                        std::make_shared<ParseNode>(
+                                                          'U', 0,
+                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                std::make_shared<ParseNode>(
+                                                                  'P', 0,
+                                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                                        std::make_shared<ParseNode>(
+                                                                          '}', 142,
                                                                           std::vector<std::shared_ptr<ParseNode>>{}
                                                                         )
                                                                   }
@@ -1034,6 +1138,588 @@ std::make_shared<ParseNode>(
                                                           }
                                                         )
                                                   }
+                                                )
+                                          }
+                                        )
+                                  }
+                                )
+                          }
+                        ),
+                        std::make_shared<ParseNode>(
+                          'L', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  'R', 0,
+                                  std::vector<std::shared_ptr<ParseNode>>{
+                                        std::make_shared<ParseNode>(
+                                          '}', 147,
+                                          std::vector<std::shared_ptr<ParseNode>>{}
+                                        )
+                                  }
+                                )
+                          }
+                        ),
+                        std::make_shared<ParseNode>(
+                          'U', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  'R', 0,
+                                  std::vector<std::shared_ptr<ParseNode>>{
+                                        std::make_shared<ParseNode>(
+                                          'S', 0,
+                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                std::make_shared<ParseNode>(
+                                                  'R', 0,
+                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                        std::make_shared<ParseNode>(
+                                                          ' ', 0,
+                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                std::make_shared<ParseNode>(
+                                                                  'D', 0,
+                                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                                        std::make_shared<ParseNode>(
+                                                                          'O', 0,
+                                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                                std::make_shared<ParseNode>(
+                                                                                  'W', 0,
+                                                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                                                        std::make_shared<ParseNode>(
+                                                                                          'N', 0,
+                                                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                                                std::make_shared<ParseNode>(
+                                                                                                  '}', 17,
+                                                                                                  std::vector<std::shared_ptr<ParseNode>>{}
+                                                                                                )
+                                                                                          }
+                                                                                        )
+                                                                                  }
+                                                                                )
+                                                                          }
+                                                                        )
+                                                                  }
+                                                                ),
+                                                                std::make_shared<ParseNode>(
+                                                                  'L', 0,
+                                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                                        std::make_shared<ParseNode>(
+                                                                          'E', 0,
+                                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                                std::make_shared<ParseNode>(
+                                                                                  'F', 0,
+                                                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                                                        std::make_shared<ParseNode>(
+                                                                                          'T', 0,
+                                                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                                                std::make_shared<ParseNode>(
+                                                                                                  '}', 157,
+                                                                                                  std::vector<std::shared_ptr<ParseNode>>{}
+                                                                                                )
+                                                                                          }
+                                                                                        )
+                                                                                  }
+                                                                                )
+                                                                          }
+                                                                        )
+                                                                  }
+                                                                ),
+                                                                std::make_shared<ParseNode>(
+                                                                  'R', 0,
+                                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                                        std::make_shared<ParseNode>(
+                                                                          'I', 0,
+                                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                                std::make_shared<ParseNode>(
+                                                                                  'G', 0,
+                                                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                                                        std::make_shared<ParseNode>(
+                                                                                          'H', 0,
+                                                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                                                std::make_shared<ParseNode>(
+                                                                                                  'T', 0,
+                                                                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                                                                        std::make_shared<ParseNode>(
+                                                                                                          '}', 29,
+                                                                                                          std::vector<std::shared_ptr<ParseNode>>{}
+                                                                                                        )
+                                                                                                  }
+                                                                                                )
+                                                                                          }
+                                                                                        )
+                                                                                  }
+                                                                                )
+                                                                          }
+                                                                        )
+                                                                  }
+                                                                ),
+                                                                std::make_shared<ParseNode>(
+                                                                  'U', 0,
+                                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                                        std::make_shared<ParseNode>(
+                                                                          'P', 0,
+                                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                                std::make_shared<ParseNode>(
+                                                                                  '}', 145,
+                                                                                  std::vector<std::shared_ptr<ParseNode>>{}
+                                                                                )
+                                                                          }
+                                                                        )
+                                                                  }
+                                                                )
+                                                          }
+                                                        )
+                                                  }
+                                                )
+                                          }
+                                        )
+                                  }
+                                )
+                          }
+                        ),
+                        std::make_shared<ParseNode>(
+                          'Y', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  'N', 0,
+                                  std::vector<std::shared_ptr<ParseNode>>{
+                                        std::make_shared<ParseNode>(
+                                          '}', 159,
+                                          std::vector<std::shared_ptr<ParseNode>>{}
+                                        )
+                                  }
+                                )
+                          }
+                        )
+                  }
+                ),
+                std::make_shared<ParseNode>(
+                  'D', 0,
+                  std::vector<std::shared_ptr<ParseNode>>{
+                        std::make_shared<ParseNode>(
+                          'E', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  'L', 0,
+                                  std::vector<std::shared_ptr<ParseNode>>{
+                                        std::make_shared<ParseNode>(
+                                          '}', 20,
+                                          std::vector<std::shared_ptr<ParseNode>>{}
+                                        )
+                                  }
+                                )
+                          }
+                        ),
+                        std::make_shared<ParseNode>(
+                          'I', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  'S', 0,
+                                  std::vector<std::shared_ptr<ParseNode>>{
+                                        std::make_shared<ParseNode>(
+                                          'A', 0,
+                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                std::make_shared<ParseNode>(
+                                                  'B', 0,
+                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                        std::make_shared<ParseNode>(
+                                                          'L', 0,
+                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                std::make_shared<ParseNode>(
+                                                                  'E', 0,
+                                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                                        std::make_shared<ParseNode>(
+                                                                          ' ', 0,
+                                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                                std::make_shared<ParseNode>(
+                                                                                  'L', 0,
+                                                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                                                        std::make_shared<ParseNode>(
+                                                                                          'O', 0,
+                                                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                                                std::make_shared<ParseNode>(
+                                                                                                  'C', 0,
+                                                                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                                                                        std::make_shared<ParseNode>(
+                                                                                                          'K', 0,
+                                                                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                                                                std::make_shared<ParseNode>(
+                                                                                                                  '}', 8,
+                                                                                                                  std::vector<std::shared_ptr<ParseNode>>{}
+                                                                                                                )
+                                                                                                          }
+                                                                                                        )
+                                                                                                  }
+                                                                                                )
+                                                                                          }
+                                                                                        )
+                                                                                  }
+                                                                                )
+                                                                          }
+                                                                        )
+                                                                  }
+                                                                )
+                                                          }
+                                                        )
+                                                  }
+                                                )
+                                          }
+                                        )
+                                  }
+                                )
+                          }
+                        )
+                  }
+                ),
+                std::make_shared<ParseNode>(
+                  'E', 0,
+                  std::vector<std::shared_ptr<ParseNode>>{
+                        std::make_shared<ParseNode>(
+                          'N', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  'A', 0,
+                                  std::vector<std::shared_ptr<ParseNode>>{
+                                        std::make_shared<ParseNode>(
+                                          'B', 0,
+                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                std::make_shared<ParseNode>(
+                                                  'L', 0,
+                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                        std::make_shared<ParseNode>(
+                                                          'E', 0,
+                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                std::make_shared<ParseNode>(
+                                                                  ' ', 0,
+                                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                                        std::make_shared<ParseNode>(
+                                                                          'L', 0,
+                                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                                std::make_shared<ParseNode>(
+                                                                                  'O', 0,
+                                                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                                                        std::make_shared<ParseNode>(
+                                                                                          'C', 0,
+                                                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                                                std::make_shared<ParseNode>(
+                                                                                                  'K', 0,
+                                                                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                                                                        std::make_shared<ParseNode>(
+                                                                                                          '}', 9,
+                                                                                                          std::vector<std::shared_ptr<ParseNode>>{}
+                                                                                                        )
+                                                                                                  }
+                                                                                                )
+                                                                                          }
+                                                                                        )
+                                                                                  }
+                                                                                )
+                                                                          }
+                                                                        )
+                                                                  }
+                                                                )
+                                                          }
+                                                        )
+                                                  }
+                                                )
+                                          }
+                                        )
+                                  }
+                                )
+                          }
+                        )
+                  }
+                ),
+                std::make_shared<ParseNode>(
+                  'F', 0,
+                  std::vector<std::shared_ptr<ParseNode>>{
+                        std::make_shared<ParseNode>(
+                          '1', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  '}', 133,
+                                  std::vector<std::shared_ptr<ParseNode>>{}
+                                )
+                          }
+                        ),
+                        std::make_shared<ParseNode>(
+                          '2', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  '}', 137,
+                                  std::vector<std::shared_ptr<ParseNode>>{}
+                                )
+                          }
+                        ),
+                        std::make_shared<ParseNode>(
+                          '3', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  '}', 134,
+                                  std::vector<std::shared_ptr<ParseNode>>{}
+                                )
+                          }
+                        ),
+                        std::make_shared<ParseNode>(
+                          '4', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  '}', 138,
+                                  std::vector<std::shared_ptr<ParseNode>>{}
+                                )
+                          }
+                        ),
+                        std::make_shared<ParseNode>(
+                          '5', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  '}', 135,
+                                  std::vector<std::shared_ptr<ParseNode>>{}
+                                )
+                          }
+                        ),
+                        std::make_shared<ParseNode>(
+                          '6', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  '}', 139,
+                                  std::vector<std::shared_ptr<ParseNode>>{}
+                                )
+                          }
+                        ),
+                        std::make_shared<ParseNode>(
+                          '7', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  '}', 136,
+                                  std::vector<std::shared_ptr<ParseNode>>{}
+                                )
+                          }
+                        ),
+                        std::make_shared<ParseNode>(
+                          '8', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  '}', 140,
+                                  std::vector<std::shared_ptr<ParseNode>>{}
+                                )
+                          }
+                        ),
+                        std::make_shared<ParseNode>(
+                          'L', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  'A', 0,
+                                  std::vector<std::shared_ptr<ParseNode>>{
+                                        std::make_shared<ParseNode>(
+                                          'S', 0,
+                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                std::make_shared<ParseNode>(
+                                                  'H', 0,
+                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                        std::make_shared<ParseNode>(
+                                                          ' ', 0,
+                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                std::make_shared<ParseNode>(
+                                                                  'O', 0,
+                                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                                        std::make_shared<ParseNode>(
+                                                                          'N', 0,
+                                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                                std::make_shared<ParseNode>(
+                                                                                  '}', 2,
+                                                                                  std::vector<std::shared_ptr<ParseNode>>{}
+                                                                                )
+                                                                          }
+                                                                        )
+                                                                  }
+                                                                )
+                                                          }
+                                                        )
+                                                  }
+                                                )
+                                          }
+                                        )
+                                  }
+                                )
+                          }
+                        )
+                  }
+                ),
+                std::make_shared<ParseNode>(
+                  'G', 0,
+                  std::vector<std::shared_ptr<ParseNode>>{
+                        std::make_shared<ParseNode>(
+                          'R', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  'N', 0,
+                                  std::vector<std::shared_ptr<ParseNode>>{
+                                        std::make_shared<ParseNode>(
+                                          '}', 30,
+                                          std::vector<std::shared_ptr<ParseNode>>{}
+                                        )
+                                  }
+                                ),
+                                std::make_shared<ParseNode>(
+                                  'Y', 0,
+                                  std::vector<std::shared_ptr<ParseNode>>{
+                                        std::make_shared<ParseNode>(
+                                          '1', 0,
+                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                std::make_shared<ParseNode>(
+                                                  '}', 151,
+                                                  std::vector<std::shared_ptr<ParseNode>>{}
+                                                )
+                                          }
+                                        ),
+                                        std::make_shared<ParseNode>(
+                                          '2', 0,
+                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                std::make_shared<ParseNode>(
+                                                  '}', 152,
+                                                  std::vector<std::shared_ptr<ParseNode>>{}
+                                                )
+                                          }
+                                        ),
+                                        std::make_shared<ParseNode>(
+                                          '3', 0,
+                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                std::make_shared<ParseNode>(
+                                                  '}', 155,
+                                                  std::vector<std::shared_ptr<ParseNode>>{}
+                                                )
+                                          }
+                                        )
+                                  }
+                                )
+                          }
+                        )
+                  }
+                ),
+                std::make_shared<ParseNode>(
+                  'H', 0,
+                  std::vector<std::shared_ptr<ParseNode>>{
+                        std::make_shared<ParseNode>(
+                          'O', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  'M', 0,
+                                  std::vector<std::shared_ptr<ParseNode>>{
+                                        std::make_shared<ParseNode>(
+                                          'E', 0,
+                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                std::make_shared<ParseNode>(
+                                                  '}', 19,
+                                                  std::vector<std::shared_ptr<ParseNode>>{}
+                                                )
+                                          }
+                                        )
+                                  }
+                                )
+                          }
+                        )
+                  }
+                ),
+                std::make_shared<ParseNode>(
+                  'I', 0,
+                  std::vector<std::shared_ptr<ParseNode>>{
+                        std::make_shared<ParseNode>(
+                          'N', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  'S', 0,
+                                  std::vector<std::shared_ptr<ParseNode>>{
+                                        std::make_shared<ParseNode>(
+                                          'T', 0,
+                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                std::make_shared<ParseNode>(
+                                                  '}', 148,
+                                                  std::vector<std::shared_ptr<ParseNode>>{}
+                                                )
+                                          }
+                                        )
+                                  }
+                                )
+                          }
+                        )
+                  }
+                ),
+                std::make_shared<ParseNode>(
+                  'L', 0,
+                  std::vector<std::shared_ptr<ParseNode>>{
+                        std::make_shared<ParseNode>(
+                          'B', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  'L', 0,
+                                  std::vector<std::shared_ptr<ParseNode>>{
+                                        std::make_shared<ParseNode>(
+                                          'U', 0,
+                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                std::make_shared<ParseNode>(
+                                                  '}', 154,
+                                                  std::vector<std::shared_ptr<ParseNode>>{}
+                                                )
+                                          }
+                                        )
+                                  }
+                                )
+                          }
+                        ),
+                        std::make_shared<ParseNode>(
+                          'G', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  'R', 0,
+                                  std::vector<std::shared_ptr<ParseNode>>{
+                                        std::make_shared<ParseNode>(
+                                          'N', 0,
+                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                std::make_shared<ParseNode>(
+                                                  '}', 153,
+                                                  std::vector<std::shared_ptr<ParseNode>>{}
+                                                )
+                                          }
+                                        )
+                                  }
+                                )
+                          }
+                        ),
+                        std::make_shared<ParseNode>(
+                          'R', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  'E', 0,
+                                  std::vector<std::shared_ptr<ParseNode>>{
+                                        std::make_shared<ParseNode>(
+                                          'D', 0,
+                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                std::make_shared<ParseNode>(
+                                                  '}', 150,
+                                                  std::vector<std::shared_ptr<ParseNode>>{}
+                                                )
+                                          }
+                                        )
+                                  }
+                                )
+                          }
+                        )
+                  }
+                ),
+                std::make_shared<ParseNode>(
+                  'O', 0,
+                  std::vector<std::shared_ptr<ParseNode>>{
+                        std::make_shared<ParseNode>(
+                          'R', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  'N', 0,
+                                  std::vector<std::shared_ptr<ParseNode>>{
+                                        std::make_shared<ParseNode>(
+                                          'G', 0,
+                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                std::make_shared<ParseNode>(
+                                                  '}', 129,
+                                                  std::vector<std::shared_ptr<ParseNode>>{}
                                                 )
                                           }
                                         )
@@ -1052,6 +1738,261 @@ std::make_shared<ParseNode>(
                                 std::make_shared<ParseNode>(
                                   '}', 255,
                                   std::vector<std::shared_ptr<ParseNode>>{}
+                                )
+                          }
+                        ),
+                        std::make_shared<ParseNode>(
+                          'U', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  'R', 0,
+                                  std::vector<std::shared_ptr<ParseNode>>{
+                                        std::make_shared<ParseNode>(
+                                          '}', 156,
+                                          std::vector<std::shared_ptr<ParseNode>>{}
+                                        )
+                                  }
+                                )
+                          }
+                        )
+                  }
+                ),
+                std::make_shared<ParseNode>(
+                  'R', 0,
+                  std::vector<std::shared_ptr<ParseNode>>{
+                        std::make_shared<ParseNode>(
+                          'E', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  'D', 0,
+                                  std::vector<std::shared_ptr<ParseNode>>{
+                                        std::make_shared<ParseNode>(
+                                          '}', 28,
+                                          std::vector<std::shared_ptr<ParseNode>>{}
+                                        )
+                                  }
+                                ),
+                                std::make_shared<ParseNode>(
+                                  'T', 0,
+                                  std::vector<std::shared_ptr<ParseNode>>{
+                                        std::make_shared<ParseNode>(
+                                          'U', 0,
+                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                std::make_shared<ParseNode>(
+                                                  'R', 0,
+                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                        std::make_shared<ParseNode>(
+                                                          'N', 0,
+                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                std::make_shared<ParseNode>(
+                                                                  '}', 13,
+                                                                  std::vector<std::shared_ptr<ParseNode>>{}
+                                                                )
+                                                          }
+                                                        )
+                                                  }
+                                                )
+                                          }
+                                        )
+                                  }
+                                )
+                          }
+                        ),
+                        std::make_shared<ParseNode>(
+                          'U', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  'N', 0,
+                                  std::vector<std::shared_ptr<ParseNode>>{
+                                        std::make_shared<ParseNode>(
+                                          '/', 0,
+                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                std::make_shared<ParseNode>(
+                                                  'S', 0,
+                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                        std::make_shared<ParseNode>(
+                                                          'T', 0,
+                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                std::make_shared<ParseNode>(
+                                                                  'O', 0,
+                                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                                        std::make_shared<ParseNode>(
+                                                                          'P', 0,
+                                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                                std::make_shared<ParseNode>(
+                                                                                  '}', 3,
+                                                                                  std::vector<std::shared_ptr<ParseNode>>{}
+                                                                                )
+                                                                          }
+                                                                        )
+                                                                  }
+                                                                )
+                                                          }
+                                                        )
+                                                  }
+                                                )
+                                          }
+                                        )
+                                  }
+                                )
+                          }
+                        ),
+                        std::make_shared<ParseNode>(
+                          'V', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  'S', 0,
+                                  std::vector<std::shared_ptr<ParseNode>>{
+                                        std::make_shared<ParseNode>(
+                                          ' ', 0,
+                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                std::make_shared<ParseNode>(
+                                                  'O', 0,
+                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                        std::make_shared<ParseNode>(
+                                                          'F', 0,
+                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                std::make_shared<ParseNode>(
+                                                                  'F', 0,
+                                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                                        std::make_shared<ParseNode>(
+                                                                          '}', 146,
+                                                                          std::vector<std::shared_ptr<ParseNode>>{}
+                                                                        )
+                                                                  }
+                                                                )
+                                                          }
+                                                        ),
+                                                        std::make_shared<ParseNode>(
+                                                          'N', 0,
+                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                std::make_shared<ParseNode>(
+                                                                  '}', 18,
+                                                                  std::vector<std::shared_ptr<ParseNode>>{}
+                                                                )
+                                                          }
+                                                        )
+                                                  }
+                                                )
+                                          }
+                                        )
+                                  }
+                                )
+                          }
+                        )
+                  }
+                ),
+                std::make_shared<ParseNode>(
+                  'S', 0,
+                  std::vector<std::shared_ptr<ParseNode>>{
+                        std::make_shared<ParseNode>(
+                          'H', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  'I', 0,
+                                  std::vector<std::shared_ptr<ParseNode>>{
+                                        std::make_shared<ParseNode>(
+                                          'F', 0,
+                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                std::make_shared<ParseNode>(
+                                                  'T', 0,
+                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                        std::make_shared<ParseNode>(
+                                                          ' ', 0,
+                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                std::make_shared<ParseNode>(
+                                                                  'R', 0,
+                                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                                        std::make_shared<ParseNode>(
+                                                                          'E', 0,
+                                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                                std::make_shared<ParseNode>(
+                                                                                  'T', 0,
+                                                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                                                        std::make_shared<ParseNode>(
+                                                                                          'U', 0,
+                                                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                                                std::make_shared<ParseNode>(
+                                                                                                  'R', 0,
+                                                                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                                                                        std::make_shared<ParseNode>(
+                                                                                                          'N', 0,
+                                                                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                                                                std::make_shared<ParseNode>(
+                                                                                                                  '}', 141,
+                                                                                                                  std::vector<std::shared_ptr<ParseNode>>{}
+                                                                                                                )
+                                                                                                          }
+                                                                                                        )
+                                                                                                  }
+                                                                                                )
+                                                                                          }
+                                                                                        )
+                                                                                  }
+                                                                                )
+                                                                          }
+                                                                        ),
+                                                                        std::make_shared<ParseNode>(
+                                                                          'U', 0,
+                                                                          std::vector<std::shared_ptr<ParseNode>>{
+                                                                                std::make_shared<ParseNode>(
+                                                                                  'N', 0,
+                                                                                  std::vector<std::shared_ptr<ParseNode>>{
+                                                                                        std::make_shared<ParseNode>(
+                                                                                          '}', 131,
+                                                                                          std::vector<std::shared_ptr<ParseNode>>{}
+                                                                                        )
+                                                                                  }
+                                                                                )
+                                                                          }
+                                                                        )
+                                                                  }
+                                                                )
+                                                          }
+                                                        )
+                                                  }
+                                                )
+                                          }
+                                        )
+                                  }
+                                )
+                          }
+                        )
+                  }
+                ),
+                std::make_shared<ParseNode>(
+                  'W', 0,
+                  std::vector<std::shared_ptr<ParseNode>>{
+                        std::make_shared<ParseNode>(
+                          'H', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  'T', 0,
+                                  std::vector<std::shared_ptr<ParseNode>>{
+                                        std::make_shared<ParseNode>(
+                                          '}', 5,
+                                          std::vector<std::shared_ptr<ParseNode>>{}
+                                        )
+                                  }
+                                )
+                          }
+                        )
+                  }
+                ),
+                std::make_shared<ParseNode>(
+                  'Y', 0,
+                  std::vector<std::shared_ptr<ParseNode>>{
+                        std::make_shared<ParseNode>(
+                          'E', 0,
+                          std::vector<std::shared_ptr<ParseNode>>{
+                                std::make_shared<ParseNode>(
+                                  'L', 0,
+                                  std::vector<std::shared_ptr<ParseNode>>{
+                                        std::make_shared<ParseNode>(
+                                          '}', 158,
+                                          std::vector<std::shared_ptr<ParseNode>>{}
+                                        )
+                                  }
                                 )
                           }
                         )

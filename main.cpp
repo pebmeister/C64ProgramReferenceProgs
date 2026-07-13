@@ -13,6 +13,7 @@ Welcome to GDB Online.
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <filesystem>
 
 #include "d64.h"
 #include "d64_types.h"
@@ -162,7 +163,7 @@ std::vector<uint8_t> TokenizeString(std::string& str)
 
 int main()
 {
-    d64 disk(thirty_five_track);
+    d64 disk;
     disk.rename_disk("c64progref");
 
 	for (auto& prog: progs) {
@@ -191,8 +192,11 @@ int main()
 
 
 	}
-	
- //   disk.save("C64ProgramRef.D64");
+
+
+    std::string file = "C64ProgramRef.D64";
+    bool result = std::filesystem::remove(file);
+ //   disk.save(file);
     
     return 0;
 }
