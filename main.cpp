@@ -64,6 +64,9 @@ static struct LineOutput TokenizeLine(const int current_address, const std::stri
 	const std::string quote = "\"";
 	size_t pos = 0;
 	LineOutput output;
+	bool inQuote = false;
+	bool inRem = false;
+	unsigned char tok;
 
 	// get line line lineNumber
 	std::string linenum;
@@ -73,53 +76,36 @@ static struct LineOutput TokenizeLine(const int current_address, const std::stri
 	}
 
 	output.lineNumber = std::stoi(linenum);
+
 	while (std::isspace(static_cast<unsigned char>(str[pos])))
 		pos++;
 
 	while (pos < str.length()) {
-		auto result = match_longest_token(root, str, pos);
-		std::string_view tok{ str.data() + pos, result.length };
-		if (result.token_id != 0) {
-			output.bytes.push_back(result.token_id);
-			if (result.token_id == 143) { // rem statement dont tokenize rest of line
-				pos += result.length;
-				while (pos < str.length() && str[pos] != '\n') {
-			        auto byte = ascii_to_petscii[str[pos]];
-					output.bytes.push_back(byte);
-					pos++;
-				}
-				// output.bytes.push_back(0);
-				continue;
-			}
+	    auto pos_start =pos;
+		auto match_result = match_longest_token(root, str, pos);
+
+		auto ch = str[pos];
+		auto pet = ascii_to_petscii[ch];
+
+		if (!inRem && (!inQuote || (inQuote && str[pos] == '{'))) {
+			tok = (match_result.token_id >0 )
+			      ? match_result.token_id
+			      : pet;
 		}
 		else {
-		    auto byte = ascii_to_petscii[tok[0]];
-			output.bytes.push_back(byte);
-			if (tok == quote) {
-				do
-				{
-					pos++;
-					if (str[pos] == '{') { // allow {} tokens in strings
-					    result = match_longest_token(root, str, pos);
-					    std::string_view tok{str.data() + pos, result.length};
-					    if (result.token_id != 0) {
-					        output.bytes.push_back(result.token_id);
-					    }
-					    else {
-		                    byte = ascii_to_petscii[str[pos]];
-					        output.bytes.push_back(byte);
-					    }
-					    pos += (result.length -1); // pos incremented at the top
-					    continue;
-					}
-					else {
-		                byte = ascii_to_petscii[str[pos]];
-					    output.bytes.push_back(byte);
-					}
-				} while (pos < str.length() && str[pos] != quote[0]);
-			}
+			tok = pet;
+			match_result.length = 1;
 		}
-		pos += result.length;
+
+		pos += match_result.length;
+		output.bytes.push_back(tok);
+
+		if (tok == 143) { // rem statement dont tokenize rest of line
+			inRem = true;
+		}
+		else if (tok == '"') {
+			inQuote = !inQuote;
+		}
 	}
 	output.bytes.push_back(0);  // end of line marker
 	output.next = current_address + output.bytes.size() + 4;
