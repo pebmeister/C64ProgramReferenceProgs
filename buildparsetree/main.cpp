@@ -285,7 +285,7 @@ static void ReadCSV(std::string filename)
 int main(int argc, char* argv[])
 {
     if (argc != 3) {
-		std::clog << "This build a Trie state machine parser from a CSV file of keywords and tokens.\n\n"                    
+		std::clog << "This builds a Trie state machine parser from a CSV file of keywords and tokens.\n\n"                    
                 << "\n\nThe user can then call:\n"
                 << "static MatchResult match_longest_token(const std::string & text, size_t start_pos)\n"
                 << "Usage: " << argv[0] << " <inputfile.csv> <outputfile.h>\n";
