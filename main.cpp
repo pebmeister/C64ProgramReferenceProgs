@@ -15,6 +15,9 @@ Welcome to GDB Online.
 #include <fstream>
 #include <filesystem>
 
+
+namespace fs = std::filesystem;
+
 #include "d64.h"
 #include "d64_types.h"
 #include "ParseTree.h"
@@ -112,6 +115,32 @@ static struct LineOutput TokenizeLine(const int current_address, const std::stri
 	return output;
 }
 
+#include <string>
+
+void trim(std::string& str) {
+	const char* whitespace = " \t\n\r\f\v";
+
+	// 1. Find the last character that is NOT whitespace
+	size_t end = str.find_last_not_of(whitespace);
+
+	if (end == std::string::npos) {
+		str.clear(); // String is entirely whitespace
+		return;
+	}
+
+	// 2. Erase trailing whitespace
+	str.erase(end + 1);
+
+	// 3. Find the first character that is NOT whitespace
+	size_t start = str.find_first_not_of(whitespace);
+
+	// 4. Erase leading whitespace
+	if (start != 0) {
+		str.erase(0, start);
+	}
+}
+
+
 std::vector<uint8_t> TokenizeString(std::string& str)
 {
 	std::vector<uint8_t> output;
@@ -126,6 +155,8 @@ std::vector<uint8_t> TokenizeString(std::string& str)
 	// Read line by line until the end of the file
 
 	while (std::getline(ss, line)) {
+		trim(line);
+
 		if (line.empty())
 			continue;
 
@@ -147,45 +178,50 @@ std::vector<uint8_t> TokenizeString(std::string& str)
 	return output;
 }
 
-int main()
+int main(int argc, char* argv[])
 {
-    d64 disk;
-    disk.rename_disk("C64PROGREF");
-    auto progno = 1;
-	for (auto& prog: progs) {
-
-		auto pr=prog.prog;
-		std::stringstream ss;
-
-		auto i = 0;
-		while (i < pr.length())  {
-			ss << pr[i];
-			i++;
-		}
-		ss << "\n";
-
-		auto str = ss.str();
-		auto out = TokenizeString(str);
-
-		std::string output_path = std::to_string(progno++) // + "[" +
-		                           // std::to_string(prog.chapter) + "]["+
-		                           // std::to_string(prog.page) + "][" +
-		                           // std::to_string(prog.prog_number) + "]"
-								   ;
-		                          
-
-        auto result = disk.addFile(output_path, c64FileType(d64FileTypes::PRG), out);
-        if (result) {
-            std::cout << "added " << output_path << "\n";
-        }
-
-
+	if (argc != 2) {
+		std::clog << "Usage: " << argv[0] << " <input_file>" << std::endl;
 	}
 
+	auto dir = argv[1];
+
+
+	fs::path dirPath(dir);
+
+	d64 disk;
+	disk.rename_disk("C64PROGREF");
+	
+	// Ensure the path exists and is a directory before iterating
+	if (fs::exists(dirPath) && fs::is_directory(dirPath)) {
+		for (const auto& entry : fs::directory_iterator(dirPath)) {
+			auto &chapter = entry.path();
+			for (const auto& filentry : fs::directory_iterator(chapter)) {
+
+				// Open the stream in binary mode to ensure the exact byte count matches the size
+				std::filesystem::path full_path = std::filesystem::absolute(filentry.path());
+				std::ifstream file(full_path, std::ios::in | std::ios::binary);
+				if (!file.is_open()) {
+					throw std::runtime_error("Failed to open file.");
+				}
+				std::stringstream buffer;
+				buffer << file.rdbuf();
+				auto tokstring = buffer.str();
+				auto out = TokenizeString(tokstring);
+				auto c64name = "CHAPTER " + entry.path().filename().string() + " " + filentry.path().filename().string();
+				c64name.resize(c64name.length() - 4, ' ');
+				auto result = disk.addFile(c64name, c64FileType(d64FileTypes::PRG), out);
+				if (!result) {
+					std::cout << "Failed adding " << filentry.path().filename().string() << "\n";
+				}
+
+			}
+		}
+	}
 
     std::string file = "C64ProgramRef.D64";
     bool result = std::filesystem::remove(file);
-   disk.save(file);
+	disk.save(file);
     
     return 0;
 }
