@@ -12,6 +12,9 @@
 #include <cstdint>
 #include <stdexcept>
 #include <string_view>
+#include <utility>
+#include <stdexcept>
+#include <charconv>
 
 static std::map<std::string, int> KeywordToToken;
 
@@ -191,57 +194,88 @@ public:
     }
 };
 
-static std::vector<std::string> parse_csv_line(const std::string& line) {
-	std::vector<std::string> result;
-	std::string current_field;
-	bool in_quotes = false;
 
-	for (size_t i = 0; i < line.length(); ++i) {
-		char c = line[i];
+static std::string csvUnescapeField(std::string_view rawField) {
+    // If quoted, remove outer quotes and unescape "" -> "
+    if (rawField.size() >= 2 && rawField.front() == '"' && rawField.back() == '"') {
+        std::string out;
+        out.reserve(rawField.size() - 2);
 
-		if (c == '"') {
-			// If we are in quotes and the next char is also a quote, it's an escaped quote ("")
-			if (in_quotes && i + 1 < line.length() && line[i + 1] == '"') {
-				current_field += '"';
-				++i; // Skip the second quote
-			}
-			else {
-				// Otherwise, toggle our quoted state
-				in_quotes = !in_quotes;
-			}
-		}
-		else if (c == ',' && !in_quotes) {
-			// We hit a comma OUTSIDE of quotes, which means end of the column
-			result.push_back(current_field);
-			current_field.clear();
-		}
-		else {
-			// Normal character (or a comma inside quotes)
-			current_field += c;
-		}
-	}
+        for (size_t i = 1; i + 1 < rawField.size(); ++i) {
+            if (rawField[i] == '"' && rawField[i + 1] == '"') {
+                out.push_back('"');
+                ++i; // consume second quote
+            } else {
+                out.push_back(rawField[i]);
+            }
+        }
+        return out;
+    }
 
-	// Push the final column
-	result.push_back(current_field);
-	return result;
+    // Unquoted: use as-is
+    return std::string(rawField);
 }
 
-static std::vector<std::string> split_csv_simple(const std::string& line) {
-    // Simple split on commas (does NOT handle quoted commas).
-    std::vector<std::string> out;
-    std::string cur;
+static std::vector<std::string> csvSplitLine(std::string_view line) {
+    std::vector<std::string> fields;
+    fields.reserve(2);
 
-    for (char c : line) {
-            
-        if (c == ',') {
-            out.push_back(cur);
-            cur.clear();
+    std::string current;
+    bool inQuotes = false;
+
+    for (size_t i = 0; i < line.size(); ++i) {
+        char c = line[i];
+
+        if (c == '"') {
+            if (inQuotes && i + 1 < line.size() && line[i + 1] == '"') {
+                // Escaped quote inside a quoted field: ""
+                current.push_back('"');
+                ++i; // skip second quote
+            } else {
+                // Toggle quoted state
+                inQuotes = !inQuotes;
+            }
+        } else if (c == ',' && !inQuotes) {
+            fields.push_back(std::move(current));
+            current.clear();
         } else {
-            cur += c;
+            current.push_back(c);
         }
     }
-    out.push_back(cur);
-    return out;
+
+    fields.push_back(std::move(current));
+
+    if (fields.size() != 2) {
+        throw std::invalid_argument("Expected exactly 2 CSV fields");
+    }
+    return fields;
+}
+
+static int parseIntStrict(std::string_view s) {
+    // Trim ASCII whitespace
+    auto is_space = [](unsigned char ch) {
+        return ch == ' ' || ch == '\t' || ch == '\r' || ch == '\n';
+    };
+    while (!s.empty() && is_space(static_cast<unsigned char>(s.front()))) s.remove_prefix(1);
+    while (!s.empty() && is_space(static_cast<unsigned char>(s.back()))) s.remove_suffix(1);
+
+    int value{};
+    auto [ptr, ec] = std::from_chars(s.data(), s.data() + s.size(), value, 10);
+    if (ec != std::errc{} || ptr != s.data() + s.size()) {
+        throw std::invalid_argument("Invalid int field");
+    }
+    return value;
+}
+
+std::string trim(std::string s)
+{
+    // Trim ASCII whitespace
+    auto is_space = [](unsigned char ch) {
+        return ch == ' ' || ch == '\t' || ch == '\r' || ch == '\n';
+    };
+    while (!s.empty() && is_space(static_cast<unsigned char>(s.front()))) s.remove_prefix(1);
+    while (!s.empty() && is_space(static_cast<unsigned char>(s.back()))) s.remove_suffix(1);
+    return s;
 }
 
 static void ReadCSV(std::string filename)
@@ -256,14 +290,15 @@ static void ReadCSV(std::string filename)
 	std::string line;
 
 	while (std::getline(file, line)) {
+		line = trim(line);
 		if (line.empty()) continue;
 
 		// Use the new parser
-		auto cols = parse_csv_line(line);
+		auto cols = cvsSplitLine(line);
 		if (cols.size() < 2) continue;
 
-		std::string keyword = cols[0];
-		std::string token_str = cols[1];
+		std::string keyword = trim(csvUnescapeField(cols[0]));
+		std::string token_str = trim(cvsUnescapeFie;d(cols[1]));
 
 		// Trim whitespace (but don't strip quotes anymore!)
 		keyword.erase(0, keyword.find_first_not_of(" \t\r\n"));
@@ -274,14 +309,12 @@ static void ReadCSV(std::string filename)
 
 		if (keyword.empty() || token_str.empty()) continue;
 
-		int token = std::stoi(token_str);
+		int token = parseIntStrict(token_str);
 		KeywordToToken[keyword] = token;
 	}
 	file.close();
 }
-
-
-
+]
 int main(int argc, char* argv[])
 {
     if (argc != 3) {
