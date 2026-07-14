@@ -1,0 +1,4 @@
+10 PI=O:C=l
+20 PI=PI+4/C-4/(C+2)
+30 PRINT PI
+40 C=C+4:GOTO 20

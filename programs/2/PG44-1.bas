@@ -1,0 +1,3 @@
+40 PRINT FN A (9)
+50 R = FNAA (9)
+60 G = G + FN A9 (10)

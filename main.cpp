@@ -14,14 +14,11 @@ Welcome to GDB Online.
 #include <sstream>
 #include <fstream>
 #include <filesystem>
-
-
 namespace fs = std::filesystem;
 
 #include "d64.h"
 #include "d64_types.h"
 #include "ParseTree.h"
-#include "progs.h"
 
 
 struct LineOutput
@@ -115,9 +112,7 @@ static struct LineOutput TokenizeLine(const int current_address, const std::stri
 	return output;
 }
 
-#include <string>
-
-void trim(std::string& str) {
+static void trim(std::string& str) {
 	const char* whitespace = " \t\n\r\f\v";
 
 	// 1. Find the last character that is NOT whitespace
@@ -199,7 +194,7 @@ int main(int argc, char* argv[])
 			for (const auto& filentry : fs::directory_iterator(chapter)) {
 
 				// Open the stream in binary mode to ensure the exact byte count matches the size
-				std::filesystem::path full_path = std::filesystem::absolute(filentry.path());
+				fs::path full_path = fs::absolute(filentry.path());
 				std::ifstream file(full_path, std::ios::in | std::ios::binary);
 				if (!file.is_open()) {
 					throw std::runtime_error("Failed to open file.");
@@ -210,6 +205,7 @@ int main(int argc, char* argv[])
 				auto out = TokenizeString(tokstring);
 				auto c64name = "CHAPTER " + entry.path().filename().string() + " " + filentry.path().filename().string();
 				c64name.resize(c64name.length() - 4, ' ');
+				std::cout << c64name << "\n";
 				auto result = disk.addFile(c64name, c64FileType(d64FileTypes::PRG), out);
 				if (!result) {
 					std::cout << "Failed adding " << filentry.path().filename().string() << "\n";
