@@ -74,8 +74,12 @@ static struct LineOutput TokenizeLine(const int current_address, const std::stri
 		linenum += str[pos];
 		pos++;
 	}
-
-	output.lineNumber = std::stoi(linenum);
+	try {
+		output.lineNumber = std::stoi(linenum);
+	}
+	catch (...) {
+		throw;
+	}
 
 	while (std::isspace(static_cast<unsigned char>(str[pos])))
 		pos++;
@@ -179,45 +183,52 @@ int main(int argc, char* argv[])
 		std::clog << "Usage: " << argv[0] << " <input_file>" << std::endl;
 	}
 
-	auto dir = argv[1];
+	try {
 
 
-	fs::path dirPath(dir);
+		auto dir = argv[1];
+		fs::path dirPath(dir);
 
-	d64 disk;
-	disk.rename_disk("C64PROGREF");
-	
-	// Ensure the path exists and is a directory before iterating
-	if (fs::exists(dirPath) && fs::is_directory(dirPath)) {
-		for (const auto& entry : fs::directory_iterator(dirPath)) {
-			auto &chapter = entry.path();
-			for (const auto& filentry : fs::directory_iterator(chapter)) {
+		d64 disk;
+		disk.rename_disk("C64PROGREF");
 
-				// Open the stream in binary mode to ensure the exact byte count matches the size
-				fs::path full_path = fs::absolute(filentry.path());
-				std::ifstream file(full_path, std::ios::in | std::ios::binary);
-				if (!file.is_open()) {
-					throw std::runtime_error("Failed to open file.");
+		// Ensure the path exists and is a directory before iterating
+		if (fs::exists(dirPath) && fs::is_directory(dirPath)) {
+			for (const auto& entry : fs::directory_iterator(dirPath)) {
+				auto& chapter = entry.path();
+				for (const auto& filentry : fs::directory_iterator(chapter)) {
+
+					// Open the stream in binary mode to ensure the exact byte count matches the size
+					fs::path full_path = fs::absolute(filentry.path());
+					std::ifstream file(full_path, std::ios::in | std::ios::binary);
+					if (!file.is_open()) {
+						throw std::runtime_error("Failed to open file.");
+					}
+					std::stringstream buffer;
+					buffer << file.rdbuf();
+					auto tokstring = buffer.str();
+					auto out = TokenizeString(tokstring);
+					auto c64name = "CHAPTER " + entry.path().filename().string() + " " + filentry.path().filename().string();
+					c64name.resize(c64name.length() - 4, ' ');
+					std::cout << c64name << "\n";
+					auto result = disk.addFile(c64name, c64FileType(d64FileTypes::PRG), out);
+					if (!result) {
+						std::cout << "Failed adding " << filentry.path().filename().string() << "\n";
+					}
+
 				}
-				std::stringstream buffer;
-				buffer << file.rdbuf();
-				auto tokstring = buffer.str();
-				auto out = TokenizeString(tokstring);
-				auto c64name = "CHAPTER " + entry.path().filename().string() + " " + filentry.path().filename().string();
-				c64name.resize(c64name.length() - 4, ' ');
-				std::cout << c64name << "\n";
-				auto result = disk.addFile(c64name, c64FileType(d64FileTypes::PRG), out);
-				if (!result) {
-					std::cout << "Failed adding " << filentry.path().filename().string() << "\n";
-				}
-
 			}
 		}
-	}
 
-    std::string file = "C64ProgramRef.D64";
-    bool result = std::filesystem::remove(file);
-	disk.save(file);
-    
+		std::string file = "C64ProgramRef.D64";
+		bool result = std::filesystem::remove(file);
+		disk.save(file);
+	}
+	catch (std::exception ex) {
+		std::clog << ex.what();
+	}
+	catch (...) {
+		std::clog << "Unknown error";
+	}
     return 0;
 }

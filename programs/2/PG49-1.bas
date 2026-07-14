@@ -1,0 +1,2 @@
+10 X = ( FRE ( K ) - 1000) / 7
+950 IF FRE ( 0) < 100 THEN PRINT "NOT ENOUGH ROOM"
