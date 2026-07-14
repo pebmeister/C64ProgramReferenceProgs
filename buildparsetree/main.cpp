@@ -293,20 +293,27 @@ int main(int argc, char* argv[])
  
     std::string csvfile = argv[1];
     std::string outfile = argv[2];
+    try {
+    	ReadCSV(csvfile);
 
-    ReadCSV(csvfile);
+    	std::vector<std::pair<int, std::string>> toks;
+		for (const auto& [keyword, token] : KeywordToToken) {
+			toks.emplace_back(token, keyword);
+		}
 
-    std::vector<std::pair<int, std::string>> toks;
-	for (const auto& [keyword, token] : KeywordToToken) {
-		toks.emplace_back(token, keyword);
+		std::shared_ptr<Tokenizer::ParseNode> root = std::make_shared<Tokenizer::ParseNode>(0);
+
+		Tokenizer tokenizer;
+		tokenizer.buildtoktree(root, toks);
+		tokenizer.generateInitializerList(root, outfile);
+
+		std::cout << outfile << " created!\n";
 	}
-
-	std::shared_ptr<Tokenizer::ParseNode> root = std::make_shared<Tokenizer::ParseNode>(0);
-
-	Tokenizer tokenizer;
-	tokenizer.buildtoktree(root, toks);
-	tokenizer.generateInitializerList(root, outfile);
-
-	std::cout << outfile << " created!\n";
+	catch (std::exception ex) {
+		std::clog << ex.what();
+	}
+	catch (...) {
+		std::clog << "Unknown error";
+	}
 	return 0;
 }
