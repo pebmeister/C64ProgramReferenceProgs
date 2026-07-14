@@ -43,7 +43,7 @@ std::vector<struct Prog> progs {
 		19,
 		19,
 		4,
-		R"(10 PRINT ENTER A NUMBER" : INPUT A
+		R"(10 PRINT "ENTER A NUMBER" : INPUT A
 20 PRINT A "TIMES 5 EQUALS" A*5)",
 		{ "input", "number", "multiplication" }
 	},
@@ -119,7 +119,7 @@ std::vector<struct Prog> progs {
 		2,
 		R"(10 PRINT ASC("Z")
 20 X= ASC("ZEBRA")
-30 J = ASC(J$ +CHR$(0))",
+30 J = ASC(J$ +CHR$(0)))",
 		{"basic", "functions", "asc"}
 	},
 	{
@@ -128,7 +128,24 @@ std::vector<struct Prog> progs {
 	    38,
 	    1,
 	    R"(10 PRINT ATN (0)
-20 X=ATN (J) * 180 / {PI}: REM CONVERT TO DEGREES)"
+20 X=ATN (J) * 180 / {PI}: REM CONVERT TO DEGREES)",
+        {"basic", "functions", "atn"},
+	},
+	{
+	    2,
+	    38,
+	    38,
+	    2,
+	    R"(10 PRINT CHR$(65): REM 65 = UPPER CASE A
+20 A$=CHR$(13): REM 13 = RETURN KEY 
+50 A=ASC(A$) : A$=CHR$(A): REM CONVERTS TO C64 ASCII CODE AND BACK)",
+        { "basic", "functions", "chr$" }
+	},
+	{
+	    2,
+	    38,
+	    38,
+	    
 	}
 
 };

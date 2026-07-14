@@ -1,0 +1,121 @@
+token,value
+"*", 172
+"+", 170
+"-", 171
+"/", 173
+"<", 179
+"=", 178
+">", 177
+"ABS", 182
+"AND", 175
+"ASC", 198
+"ATN", 193
+"CHR$", 199
+"CLOSE", 160
+"CLR", 156
+"CMD", 157
+"CONT", 154
+"COS", 190
+"DATA", 131
+"DEF", 150
+"DIM", 134
+"END", 128
+"EXP", 189
+"FN", 165
+"FOR", 129
+"FRE", 184
+"GET", 161
+"GO", 203
+"GOSUB", 141
+"GOTO", 137
+"IF", 139
+"INPUT", 133
+"INPUT#", 132
+"INT", 181
+"LEFT$", 200
+"LEN", 195
+"LET", 136
+"LIST", 155
+"LOAD", 147
+"LOG", 188
+"MID$", 202
+"NEW", 162
+"NEXT", 130
+"NOT", 168
+"ON", 145
+"OPEN", 159
+"OR", 176
+"PEEK", 194
+"POKE", 151
+"POS", 185
+"PRINT", 153
+"PRINT#", 152
+"READ", 135
+"REM", 143
+"RESTORE", 140
+"RETURN", 142
+"RIGHT$", 201
+"RND", 187
+"RUN", 138
+"SAVE", 148
+"SGN", 180
+"SIN", 191
+"SPC(", 166
+"SQR", 186
+"STEP", 169
+"STOP", 144
+"STR$", 196
+"SYS", 158
+"TAB(", 163
+"TAN", 192
+"THEN", 167
+"TO", 164
+"USR", 183
+"VAL", 197
+"VERIFY", 149
+"WAIT", 146
+"^", 174
+"{BLK}", 144
+"{BLU}", 31
+"{BRN}", 149
+"{CASE LOW}", 14
+"{CASE UP}", 142
+"{CLR}", 147
+"{CURSR DOWN}", 17
+"{CURSR LEFT}", 157
+"{CURSR RIGHT}", 29
+"{CURSR UP}", 145
+"{CYN}", 159
+"{DEL}", 20
+"{DISABLE LOCK}", 8
+"{ENABLE LOCK}", 9
+"{F1}", 133
+"{F2}", 137
+"{F3}", 134
+"{F4}", 138
+"{F5}", 135
+"{F6}", 139
+"{F7}", 136
+"{F8}", 140
+"{FLASH ON}", 2
+"{GRN}", 30
+"{GRY1}", 151
+"{GRY2}", 152
+"{GRY3}", 155
+"{HOME}", 19
+"{INST}", 148
+"{LBLU}", 154
+"{LGRN}", 153
+"{LRED}", 150
+"{ORNG}", 129
+"{PI}", 255
+"{PUR}", 156
+"{RED}", 28
+"{RETURN}", 13
+"{RUN/STOP}", 3
+"{RVS OFF}", 146
+"{RVS ON}", 18
+"{SHIFT RETURN}", 141
+"{SHIFT RUN}", 131
+"{WHT}", 5
+"{YEL}", 158

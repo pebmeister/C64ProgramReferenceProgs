@@ -82,7 +82,7 @@ static struct LineOutput TokenizeLine(const int current_address, const std::stri
 
 	while (pos < str.length()) {
 	    auto pos_start =pos;
-		auto match_result = match_longest_token(root, str, pos);
+		auto match_result = match_longest_token(str, pos);
 
 		auto ch = str[pos];
 		auto pet = ascii_to_petscii[ch];
@@ -108,7 +108,7 @@ static struct LineOutput TokenizeLine(const int current_address, const std::stri
 		}
 	}
 	output.bytes.push_back(0);  // end of line marker
-	output.next = current_address + output.bytes.size() + 4;
+	output.next = static_cast<uint16_t>(current_address + output.bytes.size() + 4);
 	return output;
 }
 
@@ -150,7 +150,7 @@ std::vector<uint8_t> TokenizeString(std::string& str)
 int main()
 {
     d64 disk;
-    disk.rename_disk("c64progref");
+    disk.rename_disk("C64PROGREF");
     auto progno = 1;
 	for (auto& prog: progs) {
 
@@ -167,10 +167,11 @@ int main()
 		auto str = ss.str();
 		auto out = TokenizeString(str);
 
-		std::string output_path = std::to_string(progno++) + "[" +
-		                           std::to_string(prog.chapter) + "]["+
-		                           std::to_string(prog.page) + "][" +
-		                          std::to_string(prog.prog_number) + "]";
+		std::string output_path = std::to_string(progno++) // + "[" +
+		                           // std::to_string(prog.chapter) + "]["+
+		                           // std::to_string(prog.page) + "][" +
+		                           // std::to_string(prog.prog_number) + "]"
+								   ;
 		                          
 
         auto result = disk.addFile(output_path, c64FileType(d64FileTypes::PRG), out);
@@ -184,7 +185,7 @@ int main()
 
     std::string file = "C64ProgramRef.D64";
     bool result = std::filesystem::remove(file);
- //   disk.save(file);
+   disk.save(file);
     
     return 0;
 }
