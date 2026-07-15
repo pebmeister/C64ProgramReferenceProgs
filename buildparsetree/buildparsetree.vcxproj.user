@@ -3,11 +3,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LocalDebuggerCommandArguments>"$(ProjectDir)tokens.csv" "$(SolutionDir)ParseTree.h"</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArgumentsHistory>C:\Users\SPL PUBLIC PC 1\Documents\C64ProgramReferenceProgs-main\buildparsetree\tokens.csv C:\Users\SPL PUBLIC PC 1\Documents\C64ProgramReferenceProgs-main\ParseTree.h|"C:\Users\SPL PUBLIC PC 1\Documents\C64ProgramReferenceProgs-main\buildparsetree\tokens.csv" "C:\Users\SPL PUBLIC PC 1\Documents\C64ProgramReferenceProgs-main\ParseTree.h"|"C:\Users\SPL PUBLIC PC 1\source\repos\C64ProgramReferenceProgs\buildparsetree\tokens.csv" "C:\Users\SPL PUBLIC PC 1\source\repos\C64ProgramReferenceProgs\ParseTree.h"|</LocalDebuggerCommandArgumentsHistory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LocalDebuggerCommandArguments>"$(ProjectDir)tokens.csv" "$(SolutionDir)ParseTree.h"</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArgumentsHistory>C:\Users\SPL PUBLIC PC 1\Documents\C64ProgramReferenceProgs-main\buildparsetree\tokens.csv C:\Users\SPL PUBLIC PC 1\Documents\C64ProgramReferenceProgs-main\ParseTree.h|"C:\Users\SPL PUBLIC PC 1\Documents\C64ProgramReferenceProgs-main\buildparsetree\tokens.csv" "C:\Users\SPL PUBLIC PC 1\Documents\C64ProgramReferenceProgs-main\ParseTree.h"|"C:\Users\SPL PUBLIC PC 1\source\repos\C64ProgramReferenceProgs\buildparsetree\tokens.csv" "C:\Users\SPL PUBLIC PC 1\source\repos\C64ProgramReferenceProgs\ParseTree.h"|</LocalDebuggerCommandArgumentsHistory>
   </PropertyGroup>
 </Project>
