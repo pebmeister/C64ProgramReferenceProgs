@@ -18,6 +18,12 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CsvReader.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tokenizer.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="tokens.csv" />
