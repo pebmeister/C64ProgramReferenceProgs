@@ -200,7 +200,7 @@ int main(int argc, char* argv[])
 					buffer << file.rdbuf();
 					auto tokstring = buffer.str();
 					auto out = TokenizeString(tokstring);
-					auto c64name = "CHAPTER " + entry.path().filename().string() + " " + filentry.path().filename().string();
+					auto c64name = "CH" + entry.path().filename().string() + " " + filentry.path().filename().string();
 					c64name.resize(c64name.length() - 4, ' ');
 					std::cout << c64name << "\n";
 					auto result = disk.addFile(c64name, c64FileType(d64FileTypes::PRG), out);
