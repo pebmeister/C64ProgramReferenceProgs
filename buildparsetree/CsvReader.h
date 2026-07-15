@@ -1,146 +1,167 @@
 #pragma once
-
-// written by Paul Baxter
+// written by Paul Baxter (Optimized)
 #include <iostream>
 #include <vector>
-#include <iomanip>
-#include <map>
-#include <chrono>
-#include <fstream>
-#include <functional>
-#include <algorithm>
-#include <unordered_map>
 #include <string>
-#include <cstdint>
-#include <stdexcept>
 #include <string_view>
 #include <utility>
+#include <fstream>
+#include <sstream>
 #include <stdexcept>
 #include <charconv>
+#include <algorithm>
 
 class csvReader {
 private:
+    // Zero-allocation trim: simply shrinks the string_view window!
+    static std::string_view trim(std::string_view s) {
+        size_t start = s.find_first_not_of(" \t\r\n");
+        if (start == std::string_view::npos) return {};
+        size_t end = s.find_last_not_of(" \t\r\n");
+        return s.substr(start, end - start + 1);
+    }
 
-	static std::string csvUnescapeField(std::string_view rawField) {
-		// If quoted, remove outer quotes and unescape "" -> "
-		if (rawField.size() >= 2 && rawField.front() == '"' && rawField.back() == '"') {
-			std::string out;
-			out.reserve(rawField.size() - 2);
+    // In-place unescape: Returns either a slice of the original buffer,
+    // or a newly allocated string ONLY if we actually have escaped double-quotes to resolve.
+    static std::string csvUnescapeField(std::string_view rawField, std::string& scratchBuffer) {
+        rawField = trim(rawField);
 
-			for (size_t i = 1; i + 1 < rawField.size(); ++i) {
-				if (rawField[i] == '"' && rawField[i + 1] == '"') {
-					out.push_back('"');
-					++i; // consume second quote
-				} else {
-					out.push_back(rawField[i]);
-				}
-			}
-			return out;
-		}
+        if (rawField.size() >= 2 && rawField.front() == '"' && rawField.back() == '"') {
+            std::string_view inner = rawField.substr(1, rawField.size() - 2);
 
-		// Unquoted: use as-is
-		return std::string(rawField);
-	}
+            // Check if we actually need to unescape any double-quotes.
+            // If not, we can avoid allocating a new string entirely!
+            if (inner.find("\"\"") == std::string_view::npos) {
+                return std::string(inner);
+            }
 
-	static std::vector<std::string> csvSplitLine(std::string_view line) {
-		std::vector<std::string> fields;
-		fields.reserve(2);
+            // Otherwise, clean up the escaped quotes using a reused scratch buffer
+            scratchBuffer.clear();
+            scratchBuffer.reserve(inner.size());
+            for (size_t i = 0; i < inner.size(); ++i) {
+                if (inner[i] == '"' && i + 1 < inner.size() && inner[i + 1] == '"') {
+                    scratchBuffer.push_back('"');
+                    ++i; // skip second quote
+                }
+                else {
+                    scratchBuffer.push_back(inner[i]);
+                }
+            }
+            return scratchBuffer;
+        }
 
-		std::string current;
-		bool inQuotes = false;
+        return std::string(rawField);
+    }
 
-		for (size_t i = 0; i < line.size(); ++i) {
-			char c = line[i];
-
-			if (c == '"') {
-				if (inQuotes && i + 1 < line.size() && line[i + 1] == '"') {
-					// Escaped quote inside a quoted field: ""
-					current.push_back('"');
-					++i; // skip second quote
-				} else {
-					// Toggle quoted state
-					inQuotes = !inQuotes;
-				}
-			} else if (c == ',' && !inQuotes) {
-				fields.push_back(std::move(current));
-				current.clear();
-			} else {
-				current.push_back(c);
-			}
-		}
-
-		fields.push_back(std::move(current));
-
-		if (fields.size() != 2) {
-			throw std::invalid_argument("Expected exactly 2 CSV fields");
-		}
-		return fields;
-	}
-
-	static int parseIntStrict(std::string_view s) {
-		// Trim ASCII whitespace
-		auto is_space = [](unsigned char ch) {
-			return ch == ' ' || ch == '\t' || ch == '\r' || ch == '\n';
-		};
-		while (!s.empty() && is_space(static_cast<unsigned char>(s.front()))) s.remove_prefix(1);
-		while (!s.empty() && is_space(static_cast<unsigned char>(s.back()))) s.remove_suffix(1);
-
-		int value{};
-		auto [ptr, ec] = std::from_chars(s.data(), s.data() + s.size(), value, 10);
-		if (ec != std::errc{} || ptr != s.data() + s.size()) {
-			throw std::invalid_argument("Invalid int field");
-		}
-		return value;
-	}
-
-	static std::string trim(std::string_view s)
-	{
-		// Trim ASCII whitespace
-		auto is_space = [](unsigned char ch) {
-			return ch == ' ' || ch == '\t' || ch == '\r' || ch == '\n';
-		};
-		while (!s.empty() && is_space(static_cast<unsigned char>(s.front()))) s.remove_prefix(1);
-		while (!s.empty() && is_space(static_cast<unsigned char>(s.back()))) s.remove_suffix(1);
-		return std::string(s);
-	}
+    static int parseIntStrict(std::string_view s) {
+        s = trim(s);
+        int value{};
+        auto [ptr, ec] = std::from_chars(s.data(), s.data() + s.size(), value, 10);
+        if (ec != std::errc{} || ptr != s.data() + s.size()) {
+            throw std::invalid_argument("Invalid int field");
+        }
+        return value;
+    }
 
 public:
-	static std::vector<std::pair<std::string,int>> ReadCSV(std::string filename)
-	{
-	    std::vector<std::pair<std::string, int>> out;
-		std::ifstream file(filename);
-		if (!file) {
-			throw std::runtime_error("Failed to open " + filename);
-		}
+    static std::vector<std::pair<std::string, int>> ReadCSV(const std::string& filename) {
+        // Read the entire file into memory for ultra-fast, zero-copy buffer scanning
+        std::ifstream file(filename, std::ios::binary | std::ios::ate);
+        if (!file) {
+            throw std::runtime_error("Failed to open " + filename);
+        }
 
-		std::string header;
-		std::getline(file, header); // consume header line
-		std::string line;
+        std::streamsize size = file.tellg();
+        file.seekg(0, std::ios::beg);
 
-		while (std::getline(file, line)) {
-			line = trim(line);
-			if (line.empty()) continue;
+        std::string buffer;
+        buffer.resize(size);
+        if (!file.read(&buffer[0], size)) {
+            throw std::runtime_error("Failed to read " + filename);
+        }
+        file.close();
 
-			// Use the new parser
-			auto cols = csvSplitLine(line);
-			if (cols.size() < 2) continue;
+        std::vector<std::pair<std::string, int>> out;
+        out.reserve(128); // Pre-allocate a starting size to minimize vector reallocations
 
-			std::string keyword = trim(csvUnescapeField(cols[0]));
-			std::string token_str = trim(csvUnescapeField(cols[1]));
+        std::string_view content(buffer);
 
-			// Trim whitespace (but don't strip quotes anymore!)
-			keyword.erase(0, keyword.find_first_not_of(" \t\r\n"));
-			keyword.erase(keyword.find_last_not_of(" \t\r\n") + 1);
+        // Skip Header Line
+        size_t pos = content.find_first_of("\r\n");
+        if (pos != std::string_view::npos) {
+            if (pos + 1 < content.size() && content[pos] == '\r' && content[pos + 1] == '\n') {
+                content.remove_prefix(pos + 2);
+            }
+            else {
+                content.remove_prefix(pos + 1);
+            }
+        }
 
-			token_str.erase(0, token_str.find_first_not_of(" \t\r\n"));
-			token_str.erase(token_str.find_last_not_of(" \t\r\n") + 1);
+        std::string scratch; // Reusable buffer for unescaping to avoid constant heap allocations
+        size_t i = 0;
+        size_t n = content.size();
 
-			if (keyword.empty() || token_str.empty()) continue;
+        while (i < n) {
+            std::string_view field1, field2;
 
-			int token = parseIntStrict(token_str);
-			out.push_back({keyword, token});
-		}
-		file.close();
-		return out;
-	}
+            // --- Parse Field 1 ---
+            size_t start1 = i;
+            bool inQuotes = false;
+            while (i < n) {
+                char c = content[i];
+                if (c == '"') {
+                    inQuotes = !inQuotes;
+                }
+                else if (c == ',' && !inQuotes) {
+                    field1 = content.substr(start1, i - start1);
+                    ++i; // skip ','
+                    break;
+                }
+                else if ((c == '\n' || c == '\r') && !inQuotes) {
+                    throw std::invalid_argument("Expected exactly 2 CSV fields (line ended early)");
+                }
+                ++i;
+            }
+
+            // --- Parse Field 2 ---
+            size_t start2 = i;
+            inQuotes = false;
+            while (i < n) {
+                char c = content[i];
+                if (c == '"') {
+                    inQuotes = !inQuotes;
+                }
+                else if ((c == '\n' || c == '\r') && !inQuotes) {
+                    field2 = content.substr(start2, i - start2);
+                    // Handle CRLF newlines
+                    if (c == '\r' && i + 1 < n && content[i + 1] == '\n') {
+                        ++i;
+                    }
+                    ++i; // move past newline
+                    break;
+                }
+                ++i;
+            }
+
+            // If we reached EOF while reading the last field
+            if (i == n && field2.empty() && start2 < n) {
+                field2 = content.substr(start2, n - start2);
+            }
+
+            if (field1.empty() && field2.empty()) {
+                continue; // empty row
+            }
+
+            // Process and Unescape
+            std::string keyword = csvUnescapeField(field1, scratch);
+            std::string token_str = csvUnescapeField(field2, scratch);
+
+            if (keyword.empty() || token_str.empty()) continue;
+
+            int token = parseIntStrict(token_str);
+            out.push_back({ std::move(keyword), token });
+        }
+
+        return out;
+    }
 };

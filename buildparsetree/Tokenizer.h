@@ -21,6 +21,30 @@
 class Tokenizer {
 private:
    std::map<std::string, int> KeywordToToken;
+   static std::string encodeCppString(std::string_view str) {
+	   std::string encoded;
+	   for (char c : str) {
+		   switch (c) {
+		   case '\\': encoded += "\\\\"; break;
+		   case '"':  encoded += "\\\""; break;
+		   case '\n': encoded += "\\n";  break;
+		   case '\r': encoded += "\\r";  break;
+		   case '\t': encoded += "\\t";  break;
+		   default:
+			   if (std::isprint(static_cast<unsigned char>(c))) {
+				   encoded += c;
+			   }
+			   else {
+				   // Non-printable characters are represented in hex
+				   char buffer[5];
+				   std::snprintf(buffer, sizeof(buffer), "\\x%02X", static_cast<unsigned char>(c));
+				   encoded += buffer;
+			   }
+			   break;
+		   }
+	   }
+	   return encoded;
+   }
 
 public:
     Tokenizer(std::map<std::string, int>keyWordToken)
@@ -78,7 +102,8 @@ public:
 
 		out_file << "static const std::unordered_map<std::string, int> KeywordToToken = {\n";
 		for (auto& k : keys) {
-			out_file << "    {\"" << k << "\", " << KeywordToToken.at(k) << "},\n";
+			auto cppStr = encodeCppString(k);
+			out_file << "    {\"" << cppStr << "\", " << KeywordToToken.at(k) << "},\n";
 		}
 		out_file << "};\n\n";
 
