@@ -1,12 +1,5 @@
+// written by Paul Baxter
 
-/******************************************************************************
-
-Welcome to GDB Online.
-  GDB online is an online compiler and debugger tool for C, C++, Python, PHP, Ruby,
-  C#, OCaml, VB, Perl, Swift, Prolog, Javascript, Pascal, COBOL, HTML, CSS, JS
-  Code, Compile, Run and Debug online from anywhere in world.
-
-*******************************************************************************/
 #include <stdio.h>
 #include <string>
 #include <vector>
@@ -19,7 +12,6 @@ namespace fs = std::filesystem;
 #include "d64.h"
 #include "d64_types.h"
 #include "ParseTree.h"
-
 
 struct LineOutput
 {
@@ -138,7 +130,6 @@ static void trim(std::string& str) {
 		str.erase(0, start);
 	}
 }
-
 
 std::vector<uint8_t> TokenizeString(std::string& str)
 {
