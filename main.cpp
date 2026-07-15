@@ -15,9 +15,9 @@ namespace fs = std::filesystem;
 
 struct LineOutput
 {
-	uint16_t next = 0;
-	uint16_t lineNumber = 0;
-	std::vector<uint8_t> bytes;
+    uint16_t next = 0;
+    uint16_t lineNumber = 0;
+    std::vector<uint8_t> bytes;
 };
 
 // Mapping array: Index = ASCII value, Value = C64 PETSCII (Uppercase/Graphics Mode)
@@ -53,174 +53,174 @@ const unsigned char ascii_to_petscii[256] = {
 
 static struct LineOutput TokenizeLine(const int current_address, const std::string& str)
 {
-	const std::string quote = "\"";
-	size_t pos = 0;
-	LineOutput output;
-	bool inQuote = false;
-	bool inRem = false;
-	unsigned char tok;
+    const std::string quote = "\"";
+    size_t pos = 0;
+    LineOutput output;
+    bool inQuote = false;
+    bool inRem = false;
+    unsigned char tok;
 
-	// get line line lineNumber
-	std::string linenum;
-	while (pos < str.length() && std::isdigit(str[pos])) {
-		linenum += str[pos];
-		pos++;
-	}
-	try {
-		output.lineNumber = std::stoi(linenum);
-	}
-	catch (...) {
-		throw;
-	}
+    // get line line lineNumber
+    std::string linenum;
+    while (pos < str.length() && std::isdigit(str[pos])) {
+        linenum += str[pos];
+        pos++;
+    }
+    try {
+        output.lineNumber = std::stoi(linenum);
+    }
+    catch (...) {
+        throw;
+    }
 
-	while (std::isspace(static_cast<unsigned char>(str[pos])))
-		pos++;
+    while (std::isspace(static_cast<unsigned char>(str[pos])))
+        pos++;
 
-	while (pos < str.length()) {
-	    auto pos_start =pos;
-		auto match_result = match_longest_token(str, pos);
+    while (pos < str.length()) {
+        auto pos_start =pos;
+        auto match_result = match_longest_token(str, pos);
 
-		auto ch = str[pos];
-		auto pet = ascii_to_petscii[ch];
+        auto ch = str[pos];
+        auto pet = ascii_to_petscii[ch];
 
-		if (!inRem && (!inQuote || (inQuote && str[pos] == '{'))) {
-			tok = (match_result.token_id >0 )
-			      ? match_result.token_id
-			      : pet;
-		}
-		else {
-			tok = pet;
-			match_result.length = 1;
-		}
+        if (!inRem && (!inQuote || (inQuote && str[pos] == '{'))) {
+            tok = (match_result.token_id >0 )
+                  ? match_result.token_id
+                  : pet;
+        }
+        else {
+            tok = pet;
+            match_result.length = 1;
+        }
 
-		pos += match_result.length;
-		output.bytes.push_back(tok);
+        pos += match_result.length;
+        output.bytes.push_back(tok);
 
-		if (tok == 143) { // rem statement dont tokenize rest of line
-			inRem = true;
-		}
-		else if (tok == '"') {
-			inQuote = !inQuote;
-		}
-	}
-	output.bytes.push_back(0);  // end of line marker
-	output.next = static_cast<uint16_t>(current_address + output.bytes.size() + 4);
-	return output;
+        if (tok == 143) { // rem statement dont tokenize rest of line
+            inRem = true;
+        }
+        else if (tok == '"') {
+            inQuote = !inQuote;
+        }
+    }
+    output.bytes.push_back(0);  // end of line marker
+    output.next = static_cast<uint16_t>(current_address + output.bytes.size() + 4);
+    return output;
 }
 
 static void trim(std::string& str) {
-	const char* whitespace = " \t\n\r\f\v";
+    const char* whitespace = " \t\n\r\f\v";
 
-	// 1. Find the last character that is NOT whitespace
-	size_t end = str.find_last_not_of(whitespace);
+    // 1. Find the last character that is NOT whitespace
+    size_t end = str.find_last_not_of(whitespace);
 
-	if (end == std::string::npos) {
-		str.clear(); // String is entirely whitespace
-		return;
-	}
+    if (end == std::string::npos) {
+        str.clear(); // String is entirely whitespace
+        return;
+    }
 
-	// 2. Erase trailing whitespace
-	str.erase(end + 1);
+    // 2. Erase trailing whitespace
+    str.erase(end + 1);
 
-	// 3. Find the first character that is NOT whitespace
-	size_t start = str.find_first_not_of(whitespace);
+    // 3. Find the first character that is NOT whitespace
+    size_t start = str.find_first_not_of(whitespace);
 
-	// 4. Erase leading whitespace
-	if (start != 0) {
-		str.erase(0, start);
-	}
+    // 4. Erase leading whitespace
+    if (start != 0) {
+        str.erase(0, start);
+    }
 }
 
-std::vector<uint8_t> TokenizeString(std::string& str)
+static std::vector<uint8_t> TokenizeString(std::string& str)
 {
-	std::vector<uint8_t> output;
-	std::stringstream ss(str);
+    std::vector<uint8_t> output;
+    std::stringstream ss(str);
 
-	std::string line;
-	auto current_address = 0x0801;
+    std::string line;
+    auto current_address = 0x0801;
 
-	output.push_back(current_address & 0xFF);
-	output.push_back((current_address >> 8) & 0xFF);
+    output.push_back(current_address & 0xFF);
+    output.push_back((current_address >> 8) & 0xFF);
 
-	// Read line by line until the end of the file
+    // Read line by line until the end of the file
 
-	while (std::getline(ss, line)) {
-		trim(line);
+    while (std::getline(ss, line)) {
+        trim(line);
 
-		if (line.empty())
-			continue;
+        if (line.empty())
+            continue;
 
-		auto tokline = TokenizeLine(current_address, line);
-		output.push_back(tokline.next & 0xFF);
-		output.push_back((tokline.next >> 8) & 0xFF);
-		output.push_back(tokline.lineNumber & 0xFF);
-		output.push_back((tokline.lineNumber >> 8) & 0xFF);
+        auto tokline = TokenizeLine(current_address, line);
+        output.push_back(tokline.next & 0xFF);
+        output.push_back((tokline.next >> 8) & 0xFF);
+        output.push_back(tokline.lineNumber & 0xFF);
+        output.push_back((tokline.lineNumber >> 8) & 0xFF);
 
-		output.insert(output.end(), tokline.bytes.begin(), tokline.bytes.end());
-		current_address = tokline.next;
-	}
-	
-	// mark end of file
-	output.push_back(0);
-	output.push_back(0);
+        output.insert(output.end(), tokline.bytes.begin(), tokline.bytes.end());
+        current_address = tokline.next;
+    }
+    
+    // mark end of file
+    output.push_back(0);
+    output.push_back(0);
 
-	// File stream closes automatically when it goes out of scope
-	return output;
+    // File stream closes automatically when it goes out of scope
+    return output;
 }
 
 int main(int argc, char* argv[])
 {
-	if (argc != 2) {
-		std::clog << "Usage: " << argv[0] << " <input_file>" << std::endl;
-		return 1;
-	}
+    if (argc != 2) {
+        std::clog << "Usage: " << argv[0] << " <input_file>" << std::endl;
+        return 1;
+    }
 
-	try {
+    try {
 
 
-		auto dir = argv[1];
-		fs::path dirPath(dir);
+        auto dir = argv[1];
+        fs::path dirPath(dir);
 
-		d64 disk;
-		disk.rename_disk("C64PROGREF");
+        d64 disk;
+        disk.rename_disk("C64PROGREF");
 
-		// Ensure the path exists and is a directory before iterating
-		if (fs::exists(dirPath) && fs::is_directory(dirPath)) {
-			for (const auto& entry : fs::directory_iterator(dirPath)) {
-				auto& chapter = entry.path();
-				for (const auto& filentry : fs::directory_iterator(chapter)) {
+        // Ensure the path exists and is a directory before iterating
+        if (fs::exists(dirPath) && fs::is_directory(dirPath)) {
+            for (const auto& entry : fs::directory_iterator(dirPath)) {
+                auto& chapter = entry.path();
+                for (const auto& filentry : fs::directory_iterator(chapter)) {
 
-					// Open the stream in binary mode to ensure the exact byte count matches the size
-					fs::path full_path = fs::absolute(filentry.path());
-					std::ifstream file(full_path, std::ios::in | std::ios::binary);
-					if (!file.is_open()) {
-						throw std::runtime_error("Failed to open file.");
-					}
-					std::stringstream buffer;
-					buffer << file.rdbuf();
-					auto tokstring = buffer.str();
-					auto out = TokenizeString(tokstring);
-					auto c64name = "CH" + entry.path().filename().string() + " " + filentry.path().filename().string();
-					c64name.resize(c64name.length() - 4, ' ');
-					std::cout << c64name << "\n";
-					auto result = disk.addFile(c64name, c64FileType(d64FileTypes::PRG), out);
-					if (!result) {
-						std::cout << "Failed adding " << filentry.path().filename().string() << "\n";
-					}
+                    // Open the stream in binary mode to ensure the exact byte count matches the size
+                    fs::path full_path = fs::absolute(filentry.path());
+                    std::ifstream file(full_path, std::ios::in | std::ios::binary);
+                    if (!file.is_open()) {
+                        throw std::runtime_error("Failed to open file.");
+                    }
+                    std::stringstream buffer;
+                    buffer << file.rdbuf();
+                    auto tokstring = buffer.str();
+                    auto out = TokenizeString(tokstring);
+                    auto c64name = "CH" + entry.path().filename().string() + " " + filentry.path().filename().string();
+                    c64name.resize(c64name.length() - 4, ' ');
+                    std::cout << c64name << "\n";
+                    auto result = disk.addFile(c64name, c64FileType(d64FileTypes::PRG), out);
+                    if (!result) {
+                        std::cout << "Failed adding " << filentry.path().filename().string() << "\n";
+                    }
 
-				}
-			}
-		}
+                }
+            }
+        }
 
-		std::string file = "C64ProgramRef.D64";
-		bool result = std::filesystem::remove(file);
-		disk.save(file);
-	}
-	catch (std::exception ex) {
-		std::clog << ex.what();
-	}
-	catch (...) {
-		std::clog << "Unknown error";
-	}
+        std::string file = "C64ProgramRef.D64";
+        bool result = std::filesystem::remove(file);
+        disk.save(file);
+    }
+    catch (std::exception ex) {
+        std::clog << "ERROR: " << ex.what();
+    }
+    catch (...) {
+        std::clog << "Unknown error";
+    }
     return 0;
 }
