@@ -15,8 +15,8 @@ namespace fs = std::filesystem;
 
 struct LineOutput
 {
-	uint16_t next;
-	uint16_t lineNumber;
+	uint16_t next = 0;
+	uint16_t lineNumber = 0;
 	std::vector<uint8_t> bytes;
 };
 
@@ -172,6 +172,7 @@ int main(int argc, char* argv[])
 {
 	if (argc != 2) {
 		std::clog << "Usage: " << argv[0] << " <input_file>" << std::endl;
+		return 1;
 	}
 
 	try {
