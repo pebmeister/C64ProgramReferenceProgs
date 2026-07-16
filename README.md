@@ -1,2 +1,2 @@
 # C64ProgramReferenceProgs
-All programs in the C64 Programmers Reference 
+All programs in the C64 Programmers Reference manual
