@@ -1,3 +1,4 @@
+
 #pragma once
 // written by Paul Baxter
 #include <iostream>
@@ -33,7 +34,7 @@ private:
 	{
 		std::ofstream out_file(filename);
 		if (!out_file) {
-			throw std::runtime_error("Failed to create output file " + filename );
+			throw std::runtime_error("Failed to create output file " + filename);
 		}
 
 		// 1. Flatten the tree to assign state IDs
@@ -53,48 +54,90 @@ private:
 
 		size_t num_states = states.size();
 
-		// 2. Output the header and includes
+		// Prevent silent overflow of int16_t in the generated code
+		if (num_states > 32767) {
+			throw std::runtime_error("Exceeded maximum states (32767) for int16_t transition table.");
+		}
+
+		// ==============================================================
+		// 2. EQUIVALENCE CLASS COMPRESSION
+		// ==============================================================
+
+		// a. Build virtual transition table [num_states][256]
+		std::vector<std::vector<int>> virtual_table(num_states, std::vector<int>(256, 0));
+		for (size_t i = 1; i < num_states; ++i) {
+			for (const auto& child : states[i]->child) {
+				unsigned char c = static_cast<unsigned char>(child->ch);
+				virtual_table[i][c] = child->state_id;
+			}
+		}
+
+		// b. Extract character signatures (columns of the virtual table)
+		std::vector<std::vector<int>> char_signatures(256, std::vector<int>(num_states, 0));
+		for (int c = 0; c < 256; ++c) {
+			for (size_t s = 0; s < num_states; ++s) {
+				char_signatures[c][s] = virtual_table[s][c];
+			}
+		}
+
+		// c. Group identical signatures into classes
+		std::map<std::vector<int>, int> signature_to_class;
+		std::vector<int> char_class(256);
+		int num_classes = 0;
+
+		for (int c = 0; c < 256; ++c) {
+			const auto& sig = char_signatures[c];
+			if (signature_to_class.find(sig) == signature_to_class.end()) {
+				signature_to_class[sig] = num_classes++;
+			}
+			char_class[c] = signature_to_class[sig];
+		}
+
+		// d. Build the compressed table [num_states][num_classes]
+		std::vector<std::vector<int>> compressed_table(num_states, std::vector<int>(num_classes, 0));
+		for (int c = 0; c < 256; ++c) {
+			int cls = char_class[c];
+			for (size_t s = 0; s < num_states; ++s) {
+				compressed_table[s][cls] = char_signatures[c][s];
+			}
+		}
+
+		// ==============================================================
+		// 3. GENERATE C++ OUTPUT
+		// ==============================================================
+
 		out_file << "#pragma once\n"
 		         << "// Generated " << filename << "\n"
 		         << "// DO NOT EDIT - Generated via BuildTokTree\n\n"
 		         << "#include <cstdint>\n"
 		         << "#include <cstddef>\n"
-		         << "#include <string>\n"
-		         << "#include <unordered_map>\n\n";
+		         << "#include <string>\n\n";
 
-		// 3. Output structures
 		out_file << "struct MatchResult {\n"
 		         << "    int token_id;\n"
 		         << "    size_t length;\n"
 		         << "};\n\n";
 
-		// 4. Output the 2D Transition Table
-		// Using int16_t saves binary space (allows up to 32,767 states)
-		out_file << "static const int16_t transition_table[" << num_states << "][256] = {\n";
+		// Output the Equivalence Class Mapping Array
+		out_file << "static const uint8_t char_class[256] = {\n    ";
+		for (int c = 0; c < 256; ++c) {
+			out_file << char_class[c] << ", ";
+			if ((c + 1) % 16 == 0 && c != 255) out_file << "\n    ";
+		}
+		out_file << "\n};\n\n";
 
-		for (size_t i = 0; i < num_states; ++i) {
+		// Output the Compressed Transition Table
+		out_file << "static const int16_t transition_table[" << num_states << "][" << num_classes << "] = {\n";
+		for (size_t s = 0; s < num_states; ++s) {
 			out_file << "    { ";
-			if (i == 0) {
-				// State 0: All transitions point to 0
-				for (int c = 0; c < 256; ++c) out_file << "0,";
-			} else {
-				ParseNode* n = states[i];
-				// Map the children by character index
-				int next_state[256] = {0};
-				for (auto& child : n->child) {
-					unsigned char c = static_cast<unsigned char>(child->ch);
-					next_state[c] = child->state_id;
-				}
-				// Print the row
-				for (int c = 0; c < 256; ++c) {
-					out_file <<  next_state[c] << ",";
-				}
+			for (int cls = 0; cls < num_classes; ++cls) {
+				out_file << compressed_table[s][cls] << ",";
 			}
 			out_file << " },\n";
 		}
 		out_file << "};\n\n";
 
-		// 6. Output the Token Array (maps State ID to Token ID)
+		// Output the Token Array (maps State ID to Token ID)
 		out_file << "static const int token_for_state[" << num_states << "] = {\n    0, ";
 		for (size_t i = 1; i < num_states; ++i) {
 			out_file << states[i]->token << ", ";
@@ -102,8 +145,8 @@ private:
 		}
 		out_file << "\n};\n\n";
 
-		// 7. Output the new, highly optimized Match Function
-		out_file << "// Finds the longest matching prefix using the state machine\n"
+		// Output the optimized Match Function
+		out_file << "// Finds the longest matching prefix using the compressed state machine\n"
 		         << "static MatchResult match_longest_token(const std::string& text, size_t start_pos)\n"
 		         << "{\n"
 		         << "    if (start_pos >= text.length()) {\n"
@@ -114,10 +157,10 @@ private:
 		         << "    int last_valid_token = 0;\n"
 		         << "    size_t last_valid_length = 0;\n\n"
 		         << "    while (current_pos < text.length()) {\n"
-		         << "        // Use unsigned char to prevent negative array indexing\n"
-		         << "        unsigned char next_char = static_cast<unsigned char>(text[current_pos]);\n\n"
-		         << "        // O(1) table lookup\n"
-		         << "        current_state = transition_table[current_state][next_char];\n\n"
+		         << "        unsigned char next_char = static_cast<unsigned char>(text[current_pos]);\n"
+		         << "        uint8_t cls = char_class[next_char];\n\n"
+		         << "        // O(1) table lookup using equivalence class\n"
+		         << "        current_state = transition_table[current_state][cls];\n\n"
 		         << "        // State 0 means dead end - no further match is possible\n"
 		         << "        if (current_state == 0) {\n"
 		         << "            break;\n"
