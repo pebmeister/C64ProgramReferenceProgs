@@ -2,9 +2,7 @@
 // written by Paul Baxter
 #include <iostream>
 #include <vector>
-#include <iomanip>
 #include <map>
-#include <chrono>
 #include <fstream>
 #include <functional>
 #include <algorithm>
@@ -14,44 +12,11 @@
 #include <stdexcept>
 #include <string_view>
 #include <utility>
-#include <stdexcept>
-#include <charconv>
-
+#include <memory>
 
 class Tokenizer {
 private:
-   std::map<std::string, int> KeywordToToken;
-   static std::string encodeCppString(std::string_view str) {
-	   std::string encoded;
-	   for (char c : str) {
-		   switch (c) {
-		   case '\\': encoded += "\\\\"; break;
-		   case '"':  encoded += "\\\""; break;
-		   case '\n': encoded += "\\n";  break;
-		   case '\r': encoded += "\\r";  break;
-		   case '\t': encoded += "\\t";  break;
-		   default:
-			   if (std::isprint(static_cast<unsigned char>(c))) {
-				   encoded += c;
-			   }
-			   else {
-				   // Non-printable characters are represented in hex
-				   char buffer[5];
-				   std::snprintf(buffer, sizeof(buffer), "\\x%02X", static_cast<unsigned char>(c));
-				   encoded += buffer;
-			   }
-			   break;
-		   }
-	   }
-	   return encoded;
-   }
 
-public:
-    Tokenizer(std::map<std::string, int>keyWordToken)
-    {
-        KeywordToToken = keyWordToken;
-    }
-    
 	struct ParseNode {
 		char ch;
 		int token;
@@ -62,7 +27,9 @@ public:
 		ParseNode(char ch, int token) : ch(ch), token(token), state_id(0) {}
 	};
 
- 	void generateInitializerList(std::shared_ptr<ParseNode>& root, std::string& filename)
+	std::shared_ptr<Tokenizer::ParseNode> root = std::make_shared<Tokenizer::ParseNode>(0);
+
+	void generateInitializerList(std::string& filename)
 	{
 		std::ofstream out_file(filename);
 		if (!out_file) {
@@ -95,31 +62,13 @@ public:
 		         << "#include <string>\n"
 		         << "#include <unordered_map>\n\n";
 
-		// 3. Replicate your Keyword maps
-		std::vector<std::string> keys;
-		for (auto& kt : KeywordToToken) keys.push_back(kt.first);
-		std::sort(keys.begin(), keys.end());
-
-		out_file << "static const std::unordered_map<std::string, int> KeywordToToken = {\n";
-		for (auto& k : keys) {
-			auto cppStr = encodeCppString(k);
-			out_file << "    {\"" << cppStr << "\", " << KeywordToToken.at(k) << "},\n";
-		}
-		out_file << "};\n\n";
-
-		out_file << "static const std::unordered_map<int, std::string> TokenToKeyword = [] {\n"
-		         << "    std::unordered_map<int, std::string> rev;\n"
-		         << "    for (auto& p : KeywordToToken) rev[p.second] = p.first;\n"
-		         << "    return rev;\n"
-		         << "}();\n\n";
-
-		// 4. Output structures
+		// 3. Output structures
 		out_file << "struct MatchResult {\n"
 		         << "    int token_id;\n"
 		         << "    size_t length;\n"
 		         << "};\n\n";
 
-		// 5. Output the 2D Transition Table
+		// 4. Output the 2D Transition Table
 		// Using int16_t saves binary space (allows up to 32,767 states)
 		out_file << "static const int16_t transition_table[" << num_states << "][256] = {\n";
 
@@ -190,8 +139,6 @@ public:
 		out_file.close();
 	}
 
-private:
-  
 	void insertToken(std::shared_ptr<ParseNode> root, int token, const std::string& word)
 	{
 		auto curnode = root;
@@ -215,8 +162,7 @@ private:
 		curnode->token = token;
 	}
 
-public:
-	void buildtoktree(std::shared_ptr<ParseNode>& root, std::vector<std::pair<int, std::string>>& toks)
+	void buildtoktree(std::vector<std::pair<int, std::string>>& toks)
 	{
 		std::sort(toks.begin(), toks.end(), [](const auto& a, const auto& b) {
 			return a.second < b.second;
@@ -226,5 +172,13 @@ public:
 			insertToken(root, tok, str);
 		}
 	}
-};
 
+public:
+
+	Tokenizer(std::vector<std::pair<int, std::string>> toks, std::string outfile)
+	{
+		buildtoktree(toks);
+		generateInitializerList(outfile);
+	}
+
+};
