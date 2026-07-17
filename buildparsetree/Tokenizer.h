@@ -18,6 +18,7 @@
 class Tokenizer {
 private:
 
+	bool ignoreCase = false;
 	struct ParseNode {
 		char ch;
 		int token;
@@ -52,11 +53,18 @@ private:
 		};
 		assign_states(root); // Root becomes state 1
 
-		size_t num_states = states.size();
-
-		// Prevent silent overflow of int16_t in the generated code
-		if (num_states > 32767) {
-			throw std::runtime_error("Exceeded maximum states (32767) for int16_t transition table.");
+		// Determine the smallest possible data type for the transition table
+		auto num_states = states.size();
+		std::string table_type;
+		if (num_states < static_cast<size_t>(0xFF)) {
+			table_type = "uint8_t";
+		} else if (num_states < static_cast<size_t>(0xFFFF)) {
+			table_type = "uint16_t";
+		} else if (num_states < static_cast<size_t>(0xFFFFFFFF)) {
+			table_type = "uint32_t";
+		}
+		else { // what the heck are we parsing!!!!!
+			table_type = "uint64_t";
 		}
 
 		// ==============================================================
@@ -69,6 +77,9 @@ private:
 			for (const auto& child : states[i]->child) {
 				unsigned char c = static_cast<unsigned char>(child->ch);
 				virtual_table[i][c] = child->state_id;
+				if (ignoreCase) {
+					virtual_table[i][std::toupper(c)] = child->state_id;
+				}
 			}
 		}
 
@@ -127,7 +138,7 @@ private:
 		out_file << "\n};\n\n";
 
 		// Output the Compressed Transition Table
-		out_file << "static const int16_t transition_table[" << num_states << "][" << num_classes << "] = {\n";
+		out_file << "static const " << table_type << " transition_table[" << num_states << "][" << num_classes << "] = {\n";
 		for (size_t s = 0; s < num_states; ++s) {
 			out_file << "    { ";
 			for (int cls = 0; cls < num_classes; ++cls) {
@@ -152,9 +163,9 @@ private:
 		         << "    if (start_pos >= text.length()) {\n"
 		         << "        return { 0, 0 };\n"
 		         << "    }\n\n"
-		         << "    int current_state = 1; // 1 is the Root State\n"
+		         << "    " << table_type << " current_state = 1; // 1 is the Root State\n"
 		         << "    size_t current_pos = start_pos;\n"
-		         << "    int last_valid_token = 0;\n"
+		         << "    auto last_valid_token = 0;\n"
 		         << "    size_t last_valid_length = 0;\n\n"
 		         << "    while (current_pos < text.length()) {\n"
 		         << "        unsigned char next_char = static_cast<unsigned char>(text[current_pos]);\n"
@@ -167,7 +178,7 @@ private:
 		         << "        }\n\n"
 		         << "        current_pos++;\n\n"
 		         << "        // Check if the new state completes a valid token\n"
-		         << "        int token = token_for_state[current_state];\n"
+		         << "        auto token = token_for_state[current_state];\n"
 		         << "        if (token != 0) {\n"
 		         << "            last_valid_token = token;\n"
 		         << "            last_valid_length = current_pos - start_pos;\n"
@@ -212,14 +223,27 @@ private:
 		});
 
 		for (const auto& [tok, str] : toks) {
+
 			insertToken(root, tok, str);
 		}
 	}
 
 public:
 
-	Tokenizer(std::vector<std::pair<int, std::string>> toks, std::string outfile)
+	Tokenizer(std::vector<std::pair<int, std::string>> toks, std::string outfile, bool ignorecase)
 	{
+		ignoreCase = ignorecase;
+		for (const auto& [tok, s] : toks) {
+			auto str = s;
+			if (ignoreCase) {
+				std::transform(str.begin(), str.end(), str.begin(),
+				[](unsigned char c) {
+					return std::tolower(c);
+				});
+			}
+			insertToken(root, tok, str);
+		}
+
 		buildtoktree(toks);
 		generateInitializerList(outfile);
 	}
