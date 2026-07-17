@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
 			toks.push_back({tok.second, tok.first});
 		}
 
-		Tokenizer tokenizer(toks, outfile);
+		Tokenizer tokenizer(toks, outfile, false);
 
 		std::cout << outfile << " created!\n";
 	}
