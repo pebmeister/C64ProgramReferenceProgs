@@ -175,14 +175,14 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+    int diskNum = 1;
+    int progNum = 1;
     try {
-
-
         auto dir = argv[1];
         fs::path dirPath(dir);
 
         d64 disk;
-        disk.rename_disk("C64PROGREF");
+        disk.format_disk("C64PROGREF"+std::to_string(diskNum));
 
         // Ensure the path exists and is a directory before iterating
         if (fs::exists(dirPath) && fs::is_directory(dirPath)) {
@@ -207,12 +207,19 @@ int main(int argc, char* argv[])
                     if (!result) {
                         std::cout << "Failed adding " << filentry.path().filename().string() << "\n";
                     }
-
+                    progNum++;
+                    if (progNum % 20 == 0) {
+                        std::string file = "C64ProgramRef" + std::to_string(diskNum) + ".D64";
+                        bool result = std::filesystem::remove(file);
+                        disk.save(file);
+                        diskNum++;
+                        disk.format_disk("C64PROGREF"+std::to_string(diskNum));
+                    }
                 }
             }
         }
 
-        std::string file = "C64ProgramRef.D64";
+        std::string file = "C64ProgramRef" + std::to_string(diskNum) + ".D64";
         bool result = std::filesystem::remove(file);
         disk.save(file);
     }
