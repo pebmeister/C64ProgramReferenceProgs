@@ -182,7 +182,7 @@ int main(int argc, char* argv[])
         fs::path dirPath(dir);
 
         d64 disk;
-        disk.format_disk("C64PROGREF"+std::to_string(diskNum));
+        disk.formatDisk("C64PROGREF"+std::to_string(diskNum));
 
         // Ensure the path exists and is a directory before iterating
         if (fs::exists(dirPath) && fs::is_directory(dirPath)) {
@@ -213,7 +213,7 @@ int main(int argc, char* argv[])
                         bool result = std::filesystem::remove(file);
                         disk.save(file);
                         diskNum++;
-                        disk.format_disk("C64PROGREF"+std::to_string(diskNum));
+                        disk.formatDisk("C64PROGREF"+std::to_string(diskNum));
                     }
                 }
             }
