@@ -53,7 +53,6 @@ const unsigned char ascii_to_petscii[256] = {
 
 static struct LineOutput TokenizeLine(const int current_address, const std::string& str)
 {
-    const std::string quote = "\"";
     size_t pos = 0;
     LineOutput output;
     bool inQuote = false;
@@ -83,7 +82,7 @@ static struct LineOutput TokenizeLine(const int current_address, const std::stri
         auto ch = str[pos];
         auto pet = ascii_to_petscii[ch];
 
-        if (!inRem && (!inQuote || (inQuote && str[pos] == '{'))) {
+        if (!inRem && (!inQuote || (inQuote && ch == '{'))) {
             tok = (match_result.token_id >0 )
                   ? match_result.token_id
                   : pet;
@@ -92,7 +91,7 @@ static struct LineOutput TokenizeLine(const int current_address, const std::stri
             tok = pet;
             match_result.length = 1;
         }
-
+        
         pos += match_result.length;
         output.bytes.push_back(tok);
 
@@ -108,7 +107,8 @@ static struct LineOutput TokenizeLine(const int current_address, const std::stri
     return output;
 }
 
-static void trim(std::string& str) {
+static void trim(std::string& str) 
+{
     const char* whitespace = " \t\n\r\f\v";
 
     // 1. Find the last character that is NOT whitespace
