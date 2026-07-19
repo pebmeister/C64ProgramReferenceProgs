@@ -1,0 +1,1 @@
+220 PRINT INT(RND(0)*50)
