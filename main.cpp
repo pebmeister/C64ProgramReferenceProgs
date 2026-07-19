@@ -69,7 +69,7 @@ static struct LineOutput TokenizeLine(const int current_address, const std::stri
         output.lineNumber = std::stoi(linenum);
     }
     catch (...) {
-        std::clog << "string = " + str + "\n";
+        std::clog << "string = '" + str + "'\n";
         throw;
     }
 
