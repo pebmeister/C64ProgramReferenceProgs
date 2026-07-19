@@ -224,7 +224,7 @@ int main(int argc, char* argv[])
             disk.save(file);
         }
     }
-    catch (std::exception ex) {
+    catch (std::exception& ex) {
         std::clog << "ERROR: " << ex.what();
     }
     catch (...) {
