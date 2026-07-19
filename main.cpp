@@ -182,7 +182,7 @@ int main(int argc, char* argv[])
         d64 disk;
         disk.formatDisk("C64PROGREF"+std::to_string(diskNum));
 
-        std::cout << "disk " << disk.diskname();
+        std::cout << "disk " << disk.diskname() << "\n\n";
         // Ensure the path exists and is a directory before iterating
         if (fs::exists(dirPath) && fs::is_directory(dirPath)) {
             for (const auto& entry : fs::directory_iterator(dirPath)) {
@@ -213,7 +213,7 @@ int main(int argc, char* argv[])
                         disk.save(file);
                         diskNum++;
                         disk.formatDisk("C64PROGREF"+std::to_string(diskNum));
-                        std::cout << "disk " << disk.diskname();
+                        std::cout << "disk " << disk.diskname() << "\n\n";
                         progNum = 1;
                     }
                 }
