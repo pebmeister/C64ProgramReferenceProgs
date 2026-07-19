@@ -121,4 +121,11 @@ token,value
 "{YEL}", 158
 "{INST}", 148
 "{DEL}", 20
-
+"{BELL}", 7
+"{CTRL-H}", 8
+"{CTRL-I}", 9
+"{LF}", 10
+"{UP}", 145
+"{DOWN}", 17
+"{LEFT}", 157
+"{RIGHT}", 29
