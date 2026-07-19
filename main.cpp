@@ -126,7 +126,7 @@ static void trim(std::string& str)
     size_t start = str.find_first_not_of(whitespace);
 
     // 4. Erase leading whitespace
-    if (start != 0) {
+    if (start != std::string::npos && strart > 0) {
         str.erase(0, start);
     }
 }
