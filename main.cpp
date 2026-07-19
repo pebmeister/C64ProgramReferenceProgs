@@ -76,7 +76,6 @@ static struct LineOutput TokenizeLine(const int current_address, const std::stri
         pos++;
 
     while (pos < str.length()) {
-        auto pos_start =pos;
         auto match_result = match_longest_token(str, pos);
 
         auto ch = str[pos];
@@ -143,7 +142,6 @@ static std::vector<uint8_t> TokenizeString(std::string& str)
     output.push_back((current_address >> 8) & 0xFF);
 
     // Read line by line until the end of the file
-
     while (std::getline(ss, line)) {
         trim(line);
 
