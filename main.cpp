@@ -72,7 +72,7 @@ static struct LineOutput TokenizeLine(const int current_address, const std::stri
         throw;
     }
 
-    while (pos < str.length && std::isspace(static_cast<unsigned char>(str[pos])))
+    while (pos < str.length() && std::isspace(static_cast<unsigned char>(str[pos])))
         pos++;
 
     while (pos < str.length()) {
