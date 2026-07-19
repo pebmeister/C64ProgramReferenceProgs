@@ -1,0 +1,5 @@
+10 OPEN 1, 1, 1, "TAPE FILE"
+20 R$ = CHR$(13)
+30 PRINT# 1,1;R$;2;R$;3;R$;4;R$;5 
+40 PRINT# 1,6
+50 PRINT# 1,7 
