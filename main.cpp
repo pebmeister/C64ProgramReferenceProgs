@@ -212,14 +212,17 @@ int main(int argc, char* argv[])
                         disk.save(file);
                         diskNum++;
                         disk.formatDisk("C64PROGREF"+std::to_string(diskNum));
+                        progNum = 1;
                     }
                 }
             }
         }
 
-        std::string file = "C64ProgramRef" + std::to_string(diskNum) + ".D64";
-        bool result = std::filesystem::remove(file);
-        disk.save(file);
+        if (progNum > 1) {
+            std::string file = "C64ProgramRef" + std::to_string(diskNum) + ".D64";
+            bool result = std::filesystem::remove(file);
+            disk.save(file);
+        }
     }
     catch (std::exception ex) {
         std::clog << "ERROR: " << ex.what();
