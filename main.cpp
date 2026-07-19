@@ -144,10 +144,7 @@ static std::vector<uint8_t> TokenizeString(std::string& str)
 
     // Read line by line until the end of the file
     while (std::getline(ss, line)) {
-        std::cout << "raw line  '" << line << "'\n";
         trim(line);
-        std::cout << "trim line '" << line << "'\n";
-        
         if (line.empty())
             continue;
 
