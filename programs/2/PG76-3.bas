@@ -1,0 +1,3 @@
+5 CR$=CHR$(13)
+10 PRINT#2, "AAA";CR$;"BBB" 20 PRINT#2, "CCC";
+30 INPUT#2, A$,B$,DUMMY$,C$ 
