@@ -225,7 +225,7 @@ int main(int argc, char* argv[])
         }
     }
     catch (const std::exception& ex) {
-        std::clog << "ERROR: " << ex.what();
+        std::clog << "ERROR: " << ex.what() << std::endl;
     }
     catch (...) {
         std::clog << "Unknown error";
