@@ -1,0 +1,3 @@
+10 CO$=CHR$(44):CR$=CHR$(13)
+20 PRINT#1, "AAA" CO$ "BBB","CCC";"DDD";"EEE"CR$"FFF",CR$;
+30 INPUT#1, A$,BCDE$,F$ 
