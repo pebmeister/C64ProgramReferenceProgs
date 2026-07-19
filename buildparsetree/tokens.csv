@@ -119,4 +119,6 @@ token,value
 "{SHIFT RUN}", 131
 "{WHT}", 5
 "{YEL}", 158
-"{DEL}", 148
+"{INST}", 148
+"{DEL}", 20
+
