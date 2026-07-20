@@ -182,7 +182,7 @@ static std::vector<uint8_t> TokenizeString(std::string& str)
     return output;
 }
 
-static std::vector<uint8_t> Tokenize_File(fs::path& file_path)
+static std::vector<uint8_t> TokenizeFile(fs::path& file_path)
 {
 	std::ifstream file(file_path, std::ios::in | std::ios::binary);
     if (!file.is_open()) {
