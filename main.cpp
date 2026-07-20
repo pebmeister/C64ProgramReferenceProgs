@@ -206,7 +206,7 @@ int main(int argc, char* argv[])
                 auto& chapter = entry.path();
                 for (const auto& filentry : fs::directory_iterator(chapter)) {
 
-                    curFile = fileEntry.path().str();
+                    curFile = fileEntry.path().filename().string();
                     
                     // Open the stream in binary mode to ensure the exact byte count matches the size
                     fs::path full_path = fs::absolute(filentry.path());
