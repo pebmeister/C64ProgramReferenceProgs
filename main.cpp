@@ -51,6 +51,30 @@ const unsigned char ascii_to_petscii[256] = {
     0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF
 };
 
+static void trim(std::string& str) 
+{
+    const char* whitespace = " \t\n\r\f\v";
+
+    // 1. Find the last character that is NOT whitespace
+    size_t end = str.find_last_not_of(whitespace);
+
+    if (end == std::string::npos) {
+        str.clear(); // String is entirely whitespace
+        return;
+    }
+
+    // 2. Erase trailing whitespace
+    str.erase(end + 1);
+
+    // 3. Find the first character that is NOT whitespace
+    size_t start = str.find_first_not_of(whitespace);
+
+    // 4. Erase leading whitespace
+    if (start != std::string::npos && start > 0) {
+        str.erase(0, start);
+    }
+}
+
 static struct LineOutput TokenizeLine(const int current_address, const std::string& str)
 {
     size_t pos = 0;
@@ -111,30 +135,6 @@ static struct LineOutput TokenizeLine(const int current_address, const std::stri
     return output;
 }
 
-static void trim(std::string& str) 
-{
-    const char* whitespace = " \t\n\r\f\v";
-
-    // 1. Find the last character that is NOT whitespace
-    size_t end = str.find_last_not_of(whitespace);
-
-    if (end == std::string::npos) {
-        str.clear(); // String is entirely whitespace
-        return;
-    }
-
-    // 2. Erase trailing whitespace
-    str.erase(end + 1);
-
-    // 3. Find the first character that is NOT whitespace
-    size_t start = str.find_first_not_of(whitespace);
-
-    // 4. Erase leading whitespace
-    if (start != std::string::npos && start > 0) {
-        str.erase(0, start);
-    }
-}
-
 static std::vector<uint8_t> TokenizeString(std::string& str)
 {
     std::vector<uint8_t> output;
@@ -182,6 +182,18 @@ static std::vector<uint8_t> TokenizeString(std::string& str)
     return output;
 }
 
+static std::vector<uint8_t> Tokenize_File(fs::path& file_path)
+{
+	std::ifstream file(file_path, std::ios::in | std::ios::binary);
+    if (!file.is_open()) {
+    	throw std::runtime_error("Failed to open file.");
+    }
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    auto tokstring = buffer.str();
+    return TokenizeString(tokstring);
+}
+
 int main(int argc, char* argv[])
 {
     if (argc != 2) {
@@ -210,14 +222,7 @@ int main(int argc, char* argv[])
                     
                     // Open the stream in binary mode to ensure the exact byte count matches the size
                     fs::path full_path = fs::absolute(filentry.path());
-                    std::ifstream file(full_path, std::ios::in | std::ios::binary);
-                    if (!file.is_open()) {
-                        throw std::runtime_error("Failed to open file.");
-                    }
-                    std::stringstream buffer;
-                    buffer << file.rdbuf();
-                    auto tokstring = buffer.str();
-                    auto out = TokenizeString(tokstring);
+					 auto out = TokenizeFile(full_path);
                     auto c64name = "CH" + entry.path().filename().string() + " " + filentry.path().filename().string();
                     c64name.resize(c64name.length() - 4, ' ');
                     std::cout << c64name << "\n";
