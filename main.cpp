@@ -69,7 +69,7 @@ static struct LineOutput TokenizeLine(const int current_address, const std::stri
         output.lineNumber = std::stoi(linenum);
     }
     catch (const std::exception& ex) {
-        std::clog << "ERROR: string ='" << str << "' " << ex.what() << std::endl;
+        std::clog << "ERROR: TokenizeLine string ='" << str << "' " << ex.what() << std::endl;
         throw;
     }
     catch (...) {
@@ -165,7 +165,7 @@ static std::vector<uint8_t> TokenizeString(std::string& str)
             current_address = tokline.next;
         }
         catch (const std::exception& ex) {
-            std::clog << "ERROR: line ='" << line << "' " << ex.what() << std::endl;
+            std::clog << "ERROR: TokenizeString str='" << str << "' " << ex.what() << std::endl;
             throw;
         }
         catch (...) {
@@ -189,6 +189,7 @@ int main(int argc, char* argv[])
         return 1;
     }
     const std::string diskNamePrefix = "C64PROGREF";
+    std::string curFile;
     int diskNum = 1;
     int progNum = 1;
     try {
@@ -205,6 +206,8 @@ int main(int argc, char* argv[])
                 auto& chapter = entry.path();
                 for (const auto& filentry : fs::directory_iterator(chapter)) {
 
+                    curFile = fileEntry.path().str();
+                    
                     // Open the stream in binary mode to ensure the exact byte count matches the size
                     fs::path full_path = fs::absolute(filentry.path());
                     std::ifstream file(full_path, std::ios::in | std::ios::binary);
@@ -243,7 +246,7 @@ int main(int argc, char* argv[])
         }
     }
     catch (const std::exception& ex) {
-        std::clog << "ERROR: " << ex.what() << std::endl;
+        std::clog << "ERROR: " << curFile << " " << ex.what() << std::endl;
     }
     catch (...) {
         std::clog << "Unknown error";
