@@ -219,28 +219,28 @@ int main(int argc, char* argv[])
                 auto& chapter = entry.path();
                 for (const auto& filentry : fs::directory_iterator(chapter)) {
 
-                    curFile = filentry.path().filename().string();
+        			curFile = filentry.path().filename().string();
                     
                     // Open the stream in binary mode to ensure the exact byte count matches the size
-                    fs::path full_path = fs::absolute(filentry.path());
-					 auto out = TokenizeFile(full_path);
-                    auto c64name = "CH" + entry.path().filename().string() + " " + filentry.path().filename().string();
-                    c64name.resize(c64name.length() - 4, ' ');
-                    std::cout << c64name << "\n";
-                    auto result = disk.addFile(c64name, c64FileType(d64FileTypes::PRG), out);
-                    if (!result) {
-                        std::cout << "Failed adding " << filentry.path().filename().string() << "\n";
-                    }
-                    progNum++;
-                    if (progNum % 20 == 0) {
-                        std::string file = diskNamePrefix + std::to_string(diskNum) + ".D64";
-                        bool result = std::filesystem::remove(file);
-                        disk.save(file);
-                        diskNum++;
-                        disk.formatDisk(diskNamePrefix+std::to_string(diskNum));
-                        std::cout << "\ndisk: " << disk.diskname() << "\n\n";
-                        progNum = 1;
-                    }
+        			fs::path full_path = fs::absolute(filentry.path());
+					auto out = TokenizeFile(full_path);
+        			auto c64name = "CH" + entry.path().filename().string() + " " + filentry.path().filename().string();
+        			c64name.resize(c64name.length() - 4, ' ');
+            		std::cout << c64name << "\n";
+            		auto result = disk.addFile(c64name, c64FileType(d64FileTypes::PRG), out);
+                	if (!result) {
+                    	std::cout << "Failed adding " << filentry.path().filename().string() << "\n";
+            		}
+                	progNum++;
+                	if (progNum % 20 == 0) {
+                		std::string file = diskNamePrefix + std::to_string(diskNum) + ".D64";
+                		bool result = std::filesystem::remove(file);
+                		disk.save(file);
+                		diskNum++;
+            			disk.formatDisk(diskNamePrefix+std::to_string(diskNum));
+            			std::cout << "\ndisk: " << disk.diskname() << "\n\n";
+            			progNum = 1;
+            		}
                 }
             }
         }
