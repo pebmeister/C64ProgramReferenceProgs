@@ -190,6 +190,7 @@ static std::vector<uint8_t> TokenizeFile(fs::path& file_path)
     }
     std::stringstream buffer;
     buffer << file.rdbuf();
+	file.close();
     auto tokstring = buffer.str();
     return TokenizeString(tokstring);
 }
