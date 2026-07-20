@@ -68,8 +68,12 @@ static struct LineOutput TokenizeLine(const int current_address, const std::stri
     try {
         output.lineNumber = std::stoi(linenum);
     }
+    catch (const std::exception& ex) {
+        std::clog << "ERROR: string ='" << str << "' " << ex.what() << std::endl;
+        throw;
+    }
     catch (...) {
-        std::clog << "string = '" + str + "'\n";
+        std::clog << "Unknown error";
         throw;
     }
 
@@ -144,18 +148,30 @@ static std::vector<uint8_t> TokenizeString(std::string& str)
 
     // Read line by line until the end of the file
     while (std::getline(ss, line)) {
-        trim(line);
-        if (line.empty())
-            continue;
+        try {
+            
+            trim(line);
+            if (line.empty())
+                continue;
+        
+            auto tokline = TokenizeLine(current_address, line);
+        
+            output.push_back(tokline.next & 0xFF);
+            output.push_back((tokline.next >> 8) & 0xFF);
+            output.push_back(tokline.lineNumber & 0xFF);
+            output.push_back((tokline.lineNumber >> 8) & 0xFF);
 
-        auto tokline = TokenizeLine(current_address, line);
-        output.push_back(tokline.next & 0xFF);
-        output.push_back((tokline.next >> 8) & 0xFF);
-        output.push_back(tokline.lineNumber & 0xFF);
-        output.push_back((tokline.lineNumber >> 8) & 0xFF);
-
-        output.insert(output.end(), tokline.bytes.begin(), tokline.bytes.end());
-        current_address = tokline.next;
+            output.insert(output.end(), tokline.bytes.begin(), tokline.bytes.end());
+            current_address = tokline.next;
+        }
+        catch (const std::exception& ex) {
+            std::clog << "ERROR: line ='" << line << "' " << ex.what() << std::endl;
+            throw;
+        }
+        catch (...) {
+            std::clog << "Unknown error";
+            throw;
+        }
     }
     
     // mark end of file
@@ -172,7 +188,7 @@ int main(int argc, char* argv[])
         std::clog << "Usage: " << argv[0] << " <input_file>" << std::endl;
         return 1;
     }
-
+    const std::string diskNamePrefix = "C64PROGREF";
     int diskNum = 1;
     int progNum = 1;
     try {
@@ -180,9 +196,9 @@ int main(int argc, char* argv[])
         fs::path dirPath(dir);
 
         d64 disk;
-        disk.formatDisk("C64PROGREF"+std::to_string(diskNum));
+        disk.formatDisk(diskNamePrefix+std::to_string(diskNum));
 
-        std::cout << "\ndisk " << disk.diskname() << "\n\n";
+        std::cout << "\ndisk: " << disk.diskname() << "\n\n";
         // Ensure the path exists and is a directory before iterating
         if (fs::exists(dirPath) && fs::is_directory(dirPath)) {
             for (const auto& entry : fs::directory_iterator(dirPath)) {
@@ -208,12 +224,12 @@ int main(int argc, char* argv[])
                     }
                     progNum++;
                     if (progNum % 20 == 0) {
-                        std::string file = "C64ProgramRef" + std::to_string(diskNum) + ".D64";
+                        std::string file = diskNamePrefix + std::to_string(diskNum) + ".D64";
                         bool result = std::filesystem::remove(file);
                         disk.save(file);
                         diskNum++;
-                        disk.formatDisk("C64PROGREF"+std::to_string(diskNum));
-                        std::cout << "\ndisk " << disk.diskname() << "\n\n";
+                        disk.formatDisk(diskNamePrefix+std::to_string(diskNum));
+                        std::cout << "\ndisk: " << disk.diskname() << "\n\n";
                         progNum = 1;
                     }
                 }
@@ -221,7 +237,7 @@ int main(int argc, char* argv[])
         }
 
         if (progNum > 1) {
-            std::string file = "C64ProgramRef" + std::to_string(diskNum) + ".D64";
+            std::string file = diskNamePrefix + std::to_string(diskNum) + ".D64";
             bool result = std::filesystem::remove(file);
             disk.save(file);
         }
