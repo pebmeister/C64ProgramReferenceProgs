@@ -241,9 +241,9 @@ int main(int argc, char* argv[])
             			std::cout << "\ndisk: " << disk.diskname() << "\n\n";
             			progNum = 1;
             		}
-                }
-            }
-        }
+        		}
+    		}
+		}
 
         if (progNum > 1) {
             std::string file = diskNamePrefix + std::to_string(diskNum) + ".D64";
