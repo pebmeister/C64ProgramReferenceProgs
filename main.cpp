@@ -165,7 +165,7 @@ static std::vector<uint8_t> TokenizeString(std::string& str)
             current_address = tokline.next;
         }
         catch (const std::exception& ex) {
-            std::clog << "ERROR: TokenizeString str='" << str << "' " << ex.what() << std::endl;
+            std::clog << "ERROR: TokenizeString str="\n' << str << "' " << ex.what() << std::endl;
             throw;
         }
         catch (...) {
