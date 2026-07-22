@@ -98,7 +98,7 @@ static struct LineOutput TokenizeLine(const int current_address, const std::stri
         std::clog << "ERROR: TokenizeLine string ='" << str << "' " << ex.what() << std::endl;
         throw;
     }
-
+	
     // 2. Main tokenization loop
     while (pos < str.length()) {
         char ch = str[pos];
@@ -112,9 +112,12 @@ static struct LineOutput TokenizeLine(const int current_address, const std::stri
         auto match_result = match_longest_token(str, pos);
         auto pet = ascii_to_petscii[static_cast<unsigned char>(ch)];
 
+
+		bool overRide = (ch == '{');
+		
         // Tokenize only if outside REM, DATA, and regular text structures
         // (Assuming '{' is your special escape for control codes in quotes)
-        if (!inRem && !inData && (!inQuote || (inQuote && ch == '{'))) {
+        if ((!inRem && !inQuote && !inData) || overRide) {
             tok = (match_result.token_id > 0) ? match_result.token_id : pet;
         }
         else {
@@ -128,15 +131,13 @@ static struct LineOutput TokenizeLine(const int current_address, const std::stri
         // 3. State tracking updates based on what was just written
         if (tok == 143) {        // REM token ($8F)
             inRem = true;
+			std::cout << "inRem true\n";
         }
         else if (tok == 131) {   // DATA token ($83)
             inData = true;
         }
         else if (tok == '"') {
-            // Quotes only toggle quote mode if we aren't in a REM or DATA statement
-            if (!inRem && !inData) {
-                inQuote = !inQuote;
-            }
+			inQuote = !inQuote;
         }
         else if (tok == ':' && !inQuote && !inData && !inRem) {
             // Colons split statements, but NOT inside DATA or REM
