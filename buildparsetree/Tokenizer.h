@@ -62,8 +62,7 @@ private:
 			table_type = "uint16_t";
 		} else if (num_states < static_cast<size_t>(0xFFFFFFFF)) {
 			table_type = "uint32_t";
-		}
-		else { // what the heck are we parsing!!!!!
+		}	else { // what the heck are we parsing!!!!!
 			table_type = "uint64_t";
 		}
 
