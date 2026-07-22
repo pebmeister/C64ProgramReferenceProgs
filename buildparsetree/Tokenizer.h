@@ -31,7 +31,7 @@ private:
 
 	std::shared_ptr<Tokenizer::ParseNode> root = std::make_shared<Tokenizer::ParseNode>(0);
 
-	void generateTokemizer(std::string& filename)
+	void generateTokenizer(std::string& filename)
 	{
 		std::ofstream out_file(filename);
 		if (!out_file) {
