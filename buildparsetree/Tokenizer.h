@@ -31,7 +31,7 @@ private:
 
 	std::shared_ptr<Tokenizer::ParseNode> root = std::make_shared<Tokenizer::ParseNode>(0);
 
-	void generateInitializerList(std::string& filename)
+	void generateTokemizer(std::string& filename)
 	{
 		std::ofstream out_file(filename);
 		if (!out_file) {
@@ -77,8 +77,6 @@ private:
 			for (const auto& child : states[i]->child) {
 				unsigned char c = static_cast<unsigned char>(child->ch);
 				virtual_table[i][c] = child->state_id;
-				if (ignoreCase) {
-					virtual_table[i][std::toupper(c)] = child->state_id;
 				}
 			}
 		}
@@ -102,6 +100,10 @@ private:
 				signature_to_class[sig] = num_classes++;
 			}
 			char_class[c] = signature_to_class[sig];
+			if (ignoreCase) {
+					char_class[std::toupper(c)] = signature_to_class[sig];
+			}
+			
 		}
 
 		// d. Build the compressed table [num_states][num_classes]
@@ -245,7 +247,7 @@ public:
 		}
 
 		buildtoktree(toks);
-		generateInitializerList(outfile);
+		generateTokenizer(outfile);
 	}
 
 };
