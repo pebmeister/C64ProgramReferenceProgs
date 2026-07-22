@@ -76,7 +76,6 @@ private:
 			for (const auto& child : states[i]->child) {
 				unsigned char c = static_cast<unsigned char>(child->ch);
 				virtual_table[i][c] = child->state_id;
-				}
 			}
 		}
 
