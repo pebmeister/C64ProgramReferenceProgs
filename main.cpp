@@ -7,6 +7,7 @@
 #include <sstream>
 #include <fstream>
 #include <filesystem>
+#include <iomanip>
 namespace fs = std::filesystem;
 
 #include "d64.h"
@@ -81,9 +82,10 @@ static struct LineOutput TokenizeLine(const int current_address, const std::stri
     LineOutput output;
     bool inQuote = false;
     bool inRem = false;
+    bool inData = false;
     unsigned char tok;
-
-    // get line line lineNumber
+	
+    // 1. Parse line number
     std::string linenum;
     while (pos < str.length() && std::isdigit(str[pos])) {
         linenum += str[pos];
@@ -96,44 +98,58 @@ static struct LineOutput TokenizeLine(const int current_address, const std::stri
         std::clog << "ERROR: TokenizeLine string ='" << str << "' " << ex.what() << std::endl;
         throw;
     }
-    catch (...) {
-        std::clog << "Unknown error";
-        throw;
-    }
 
-    while (pos < str.length() && std::isspace(static_cast<unsigned char>(str[pos])))
-        pos++;
-
+    // 2. Main tokenization loop
     while (pos < str.length()) {
+        char ch = str[pos];
+
+        // C64 BASIC strips spaces completely EXCEPT inside REM, DATA, or Quotes
+        if (ch == ' ' && !inRem && !inData && !inQuote) {
+            pos++;
+            continue; 
+        }
+
         auto match_result = match_longest_token(str, pos);
+        auto pet = ascii_to_petscii[static_cast<unsigned char>(ch)];
 
-        auto ch = str[pos];
-        auto pet = ascii_to_petscii[ch];
-
-        if (!inRem && (!inQuote || (inQuote && ch == '{'))) {
-            tok = (match_result.token_id >0 )
-                  ? match_result.token_id
-                  : pet;
+        // Tokenize only if outside REM, DATA, and regular text structures
+        // (Assuming '{' is your special escape for control codes in quotes)
+        if (!inRem && !inData && (!inQuote || (inQuote && ch == '{'))) {
+            tok = (match_result.token_id > 0) ? match_result.token_id : pet;
         }
         else {
             tok = pet;
             match_result.length = 1;
         }
-        
+
         pos += match_result.length;
         output.bytes.push_back(tok);
 
-        if (tok == 143) { // rem statement dont tokenize rest of line
+        // 3. State tracking updates based on what was just written
+        if (tok == 143) {        // REM token ($8F)
             inRem = true;
         }
+        else if (tok == 131) {   // DATA token ($83)
+            inData = true;
+        }
         else if (tok == '"') {
-            inQuote = !inQuote;
+            // Quotes only toggle quote mode if we aren't in a REM or DATA statement
+            if (!inRem && !inData) {
+                inQuote = !inQuote;
+            }
+        }
+        else if (tok == ':' && !inQuote && !inData && !inRem) {
+            // Colons split statements, but NOT inside DATA or REM
+            // (Kept here for completeness, though it doesn't change flags now)
         }
     }
-    output.bytes.push_back(0);  // end of line marker
+
+    output.bytes.push_back(0);  // End of line marker
+    // C64 lines include 2 bytes for next-pointer + 2 bytes for line number = 4 bytes overhead
     output.next = static_cast<uint16_t>(current_address + output.bytes.size() + 4);
     return output;
 }
+
 
 static std::vector<uint8_t> TokenizeString(std::string& str)
 {
