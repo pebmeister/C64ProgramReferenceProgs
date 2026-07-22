@@ -131,7 +131,6 @@ static struct LineOutput TokenizeLine(const int current_address, const std::stri
         // 3. State tracking updates based on what was just written
         if (tok == 143) {        // REM token ($8F)
             inRem = true;
-			std::cout << "inRem true\n";
         }
         else if (tok == 131) {   // DATA token ($83)
             inData = true;
