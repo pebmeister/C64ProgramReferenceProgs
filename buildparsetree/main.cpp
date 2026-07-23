@@ -28,7 +28,7 @@ bool parseArgs(int argc, char* argv[], Options& opt)
         }
         else if (!arg.empty() && arg[0] == '-')
         {
-            std::cerr << "Unknown option: " << arg << '\\n';
+            std::cerr << "Unknown option: " << arg << '\n';
             return false;
         }
         else
@@ -39,7 +39,7 @@ bool parseArgs(int argc, char* argv[], Options& opt)
 
     if (files.size() != 2)
     {
-        std::cerr << "Usage: tool [-i] <csv token file> <output header file>\\n";
+        std::cerr << "Usage: tool [-i] <csv token file> <output header file>\n";
         return false;
     }
 
