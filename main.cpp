@@ -248,7 +248,7 @@ int main(int argc, char* argv[])
                     	std::cout << "Failed adding " << filentry.path().filename().string() << "\n";
             		}
                 	progNum++;
-                	if (progNum % 20 == 0) {
+                	if (progNum % 100 == 0) {
                 		std::string file = diskNamePrefix + std::to_string(diskNum) + ".D64";
                 		bool result = std::filesystem::remove(file);
                 		disk.save(file);
