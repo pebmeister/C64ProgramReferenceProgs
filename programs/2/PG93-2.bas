@@ -1,2 +1,0 @@
-10 AA = PEEK(197): IF AA = 64 THEN 10 
-20 BB$ = CHR$(AA) 

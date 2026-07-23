@@ -1,1 +1,0 @@
-10 NUM = LOG(ARG) / LOG(10) 

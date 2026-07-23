@@ -1,1 +1,0 @@
-235 AA = SIN(1.5): PRINT AA

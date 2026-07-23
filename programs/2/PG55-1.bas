@@ -1,2 +1,0 @@
-10 INPUT# 1, A
-20 INPUT# 2, A$, B$

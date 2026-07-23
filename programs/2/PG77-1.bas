@@ -1,2 +1,0 @@
-110 READ A, B, C$  
-120 DATA 1, 2, HELLO 
