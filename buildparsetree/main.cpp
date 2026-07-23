@@ -56,9 +56,9 @@ int main(int argc, char* argv[])
     if (!parseArgs(argc, argv, opt))
         return 1;
 
-    std::cout << "CSV token file : " << opt.csvTokenFile << '\\n';
-    std::cout << "Output header  : " << opt.outputHeaderFile << '\\n';
-    std::cout << "Ignore case    : " << std::boolalpha << opt.ignoreCase << '\\n';
+    std::cout << "CSV token file : " << opt.csvTokenFile << '\n';
+    std::cout << "Output header  : " << opt.outputHeaderFile << '\n';
+    std::cout << "Ignore case    : " << std::boolalpha << opt.ignoreCase << '\n';
 
     // std::map<std::string, int> keywordToToken;
     auto& csvfile = opt.cvsTokenFile;
