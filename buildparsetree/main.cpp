@@ -1,43 +1,90 @@
 
 // written by Paul Baxter
+#include <iostream>
+#include <string>
+#include <vector>
 
 #include "Tokenizer.h"
 #include "CsvReader.h"
 
+struct Options
+{
+    std::string csvTokenFile;
+    std::string outputHeaderFile;
+    bool ignoreCase = false;
+};
+
+bool parseArgs(int argc, char* argv[], Options& opt)
+{
+    std::vector<std::string> files;
+
+    for (int i = 1; i < argc; ++i)
+    {
+        std::string arg = argv[i];
+
+        if (arg == "-i" || arg == "--ignore-case")
+        {
+            opt.ignoreCase = true;
+        }
+        else if (!arg.empty() && arg[0] == '-')
+        {
+            std::cerr << "Unknown option: " << arg << '\\n';
+            return false;
+        }
+        else
+        {
+            files.push_back(arg);
+        }
+    }
+
+    if (files.size() != 2)
+    {
+        std::cerr << "Usage: tool [-i] <csv token file> <output header file>\\n";
+        return false;
+    }
+
+    opt.csvTokenFile = files[0];
+    opt.outputHeaderFile = files[1];
+
+    return true;
+}
+
 int main(int argc, char* argv[])
 {
-	if (argc != 3) {
-		std::clog
-		        << "This builds a Trie state machine parser from a CSV file of keywords and tokens.\n"
-		        << "Usage: " << argv[0] << " <inputfile.csv> <outputfile.h>\n"
-		        << "\n\nThe user can then call:\n"
-		        << "static MatchResult match_longest_token(const std::string & text, size_t start_pos)\n"
-		        ;
-		return 1;
-	}
+    Options opt;
 
-	// std::map<std::string, int> keywordToToken;
-	std::string csvfile = argv[1];
-	std::string outfile = argv[2];
+    if (!parseArgs(argc, argv, opt))
+        return 1;
 
-	std::vector<std::pair<int, std::string>> toks;
+    std::cout << "CSV token file : " << opt.csvTokenFile << '\\n';
+    std::cout << "Output header  : " << opt.outputHeaderFile << '\\n';
+    std::cout << "Ignore case    : " << std::boolalpha << opt.ignoreCase << '\\n';
 
-	try {
+	   // std::map<std::string, int> keywordToToken;
+	   auto& csvfile = opt.cvsTokenFile;
+	   auto& outfile = opt.outputHeaderFile;
+				auto ignoreCase = opt.ignoreCase;
 
-		auto csvToks = csvReader::ReadCSV(csvfile);
-		for (auto& tok: csvToks) {
-			toks.push_back({tok.second, tok.first});
-		}
+	   std::vector<std::pair<int, std::string>> toks;
 
-		Tokenizer tokenizer(toks, outfile, false);
+	   try {
 
-		std::cout << outfile << " created!\n";
-	}
-	catch (std::exception ex) {
-		std::clog << ex.what();
-	}
-	catch (...) {
-		std::clog << "Unknown error";
-	}
-	return 0;
+		      auto csvToks = csvReader::ReadCSV(csvfile);
+		      for (auto& tok: csvToks) {
+			         toks.push_back({tok.second, tok.first});
+		      }
+
+		      Tokenizer tokenizer(toks, outfile, ignoreCase);
+
+		      std::cout << outfile << " created!\n";
+	   }
+	   catch (std::exception& ex) {
+		      std::clog << ex.what();
+        return 1;
+	   }
+	   catch (...) {
+		      std::clog << "Unknown error";
+        return 0;
+	   }
+	   return 0;
 }
