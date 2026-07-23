@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
     std::cout << "Ignore case    : " << std::boolalpha << opt.ignoreCase << '\n';
 
     // std::map<std::string, int> keywordToToken;
-    auto& csvfile = opt.cvsTokenFile;
+    auto& csvfile = opt.csvTokenFile;
     auto& outfile = opt.outputHeaderFile;
     auto ignoreCase = opt.ignoreCase;
 
