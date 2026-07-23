@@ -136,7 +136,9 @@ static struct LineOutput TokenizeLine(const int current_address, const std::stri
             inData = true;
         }
         else if (tok == '"') {
-			inQuote = !inQuote;
+            if (!inRem) {
+			    inQuote = !inQuote;
+            }
         }
         else if (tok == ':' && !inQuote && !inData && !inRem) {
             // Colons split statements, but NOT inside DATA or REM
