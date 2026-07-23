@@ -1615,7 +1615,7 @@ bool d64::expandRelFile(std::string_view filename, int requiredBytes) {
     
     while (bytesToAdd > 0) {
         int nextTrack = 0, nextSector = 0;
-        if (!findAndAllocateFreeSector(nextTrack, nextSector)) {
+        if (!findAndAllocateFreeSector(nextTrack, nextSector, false)) {
             return false;
         }
         
