@@ -1,0 +1,2 @@
+25 FOR XX = 2 TO 20 STEP 2 
+35 FOR ZZ = 0 TO -20 STEP -2 

@@ -1,0 +1,3 @@
+10 PRINT "THIS IS LINE 10"
+20 LIST : REM (LIST used in Program Mode)
+30 PRINT "THIS IS LINE 30"

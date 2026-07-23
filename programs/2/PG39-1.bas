@@ -1,0 +1,3 @@
+10 CLOSE 1
+20 CLOSE X
+30 CLOSE 9 * ( 1 + J )
