@@ -60,31 +60,31 @@ int main(int argc, char* argv[])
     std::cout << "Output header  : " << opt.outputHeaderFile << '\\n';
     std::cout << "Ignore case    : " << std::boolalpha << opt.ignoreCase << '\\n';
 
-	   // std::map<std::string, int> keywordToToken;
-	   auto& csvfile = opt.cvsTokenFile;
-	   auto& outfile = opt.outputHeaderFile;
-				auto ignoreCase = opt.ignoreCase;
+    // std::map<std::string, int> keywordToToken;
+    auto& csvfile = opt.cvsTokenFile;
+    auto& outfile = opt.outputHeaderFile;
+    auto ignoreCase = opt.ignoreCase;
 
-	   std::vector<std::pair<int, std::string>> toks;
+    std::vector<std::pair<int, std::string>> toks;
 
-	   try {
+    try {
 
-		      auto csvToks = csvReader::ReadCSV(csvfile);
-		      for (auto& tok: csvToks) {
-			         toks.push_back({tok.second, tok.first});
-		      }
+        auto csvToks = csvReader::ReadCSV(csvfile);
+        for (auto& tok: csvToks) {
+            toks.push_back({tok.second, tok.first});
+        }
 
-		      Tokenizer tokenizer(toks, outfile, ignoreCase);
+        Tokenizer tokenizer(toks, outfile, ignoreCase);
 
-		      std::cout << outfile << " created!\n";
-	   }
-	   catch (std::exception& ex) {
-		      std::clog << ex.what();
+        std::cout << outfile << " created!\n";
+    }
+    catch (std::exception& ex) {
+        std::clog << ex.what();
         return 1;
-	   }
-	   catch (...) {
-		      std::clog << "Unknown error";
-        return 0;
-	   }
-	   return 0;
+    }
+    catch (...) {
+        std::clog << "Unknown error";
+        return 1;
+    }
+    return 0;
 }
