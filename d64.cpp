@@ -1636,7 +1636,7 @@ bool d64::expandRelFile(std::string_view filename, int requiredBytes) {
         lastChainIndex++;
         if (lastChainIndex >= SIDE_SECTOR_CHAIN_SZ) {
             int newSideTrack = 0, newSideSector = 0;
-            if (!findAndAllocateFreeSector(newSideTrack, newSideSector)) return false;
+            if (!findAndAllocateFreeSector(newSideTrack, newSideSector, false)) return false;
             
             side->next.track = newSideTrack;
             side->next.sector = newSideSector;
